@@ -16,6 +16,8 @@ add_executable(chess
     Game.cpp
     Board.cpp
     Tile.cpp
+    Piece.cpp
+    Pawn.cpp
 )
 
 target_link_libraries(chess PRIVATE Qt6::Widgets)

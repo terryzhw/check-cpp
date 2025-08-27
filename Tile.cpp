@@ -1,18 +1,21 @@
 #include "Tile.h"
 
 Tile::Tile() {
-    sideOccupied = 0;
-    pieceOccupied = 0;
+    piece = nullptr;
 }
 
 Tile::~Tile() {
 
 }
 
-int Tile::getSideOccupied() const {
-    return sideOccupied;
+Piece* Tile::getPiece() const {
+    return piece;
 }
 
-int Tile::getPieceOccupied() const {
-    return pieceOccupied;
+void Tile::setPiece(Piece* newPiece){
+    piece = newPiece;
+}
+
+bool Tile::isEmpty() const{
+    return piece == nullptr;
 }
