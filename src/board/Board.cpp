@@ -1,6 +1,6 @@
 #include "Board.h"
-#include "Pawn.h"
-#include "Rook.h"
+#include "../pieces/Pawn.h"
+#include "../pieces/Rook.h"
 #include <iostream>
 
 Board::Board() {

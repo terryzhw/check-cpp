@@ -1,7 +1,7 @@
 
 #include <QWidget>
 #include <QPainter>
-#include "Board.h"
+#include "../board/Board.h"
 
 class Game : public QWidget
 {
