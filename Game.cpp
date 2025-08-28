@@ -44,6 +44,17 @@ void Game::paintEvent(QPaintEvent* event) {
                   int y = row * tileSize;
                   painter.drawPixmap(x, y, tileSize, tileSize, pawnSprite);
                 }
+                if (piece->getPieceType() == 4) {  
+                  QPixmap pawnSprite;
+                  if (piece->getIsWhite()) {
+                      pawnSprite.load("../src/assets/w_rook.png");
+                  } else {
+                      pawnSprite.load("../src/assets/b_rook.png");
+                  }
+                  int x = col * tileSize;
+                  int y = row * tileSize;
+                  painter.drawPixmap(x, y, tileSize, tileSize, pawnSprite);
+                }
             }
         }
     }

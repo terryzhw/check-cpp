@@ -1,5 +1,6 @@
 #include "Board.h"
 #include "Pawn.h"
+#include "Rook.h"
 #include <iostream>
 
 Board::Board() {
@@ -9,6 +10,13 @@ Board::Board() {
         chessboard[6][col].setPiece(new Pawn(true));
         chessboard[1][col].setPiece(new Pawn(false));
     }
+
+    chessboard[7][0].setPiece(new Rook(true));
+    chessboard[7][7].setPiece(new Rook(true));
+    chessboard[0][0].setPiece(new Rook(false));
+    chessboard[0][7].setPiece(new Rook(false));
+    
+
 }
 
 Board::~Board() {
