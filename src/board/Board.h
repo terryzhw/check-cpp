@@ -11,4 +11,5 @@ public:
     Board();
     ~Board();
     Tile& getTile(int row, int col);
+    bool makeMove(int fromRow, int fromCol, int toRow, int toCol);
 };

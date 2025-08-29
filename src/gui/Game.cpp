@@ -1,10 +1,15 @@
 #include "Game.h"
 #include <QBrush>
 #include <QColor>
+#include "../pieces/Pawn.h"
 
 Game::Game(QWidget* parent) : QWidget(parent) {
     setFixedSize(800, 800);
     setWindowTitle("Chess");
+    selectedRow = -1;
+    selectedCol = -1;
+    pieceSelected = false;
+    whoseTurn = false;
 }
 
 Game::~Game() {
@@ -101,5 +106,37 @@ void Game::paintEvent(QPaintEvent* event) {
                 }
             }
         }
+    }
+}
+
+void Game::mousePressEvent(QMouseEvent* event) {
+    int tileSize = 75;
+    int col = event->position().x() / tileSize;
+    int row = event->position().y() / tileSize;
+    
+    if (row < 0 || row >= 8 || col < 0 || col >= 8) {
+        return;
+    }
+    
+    if (!pieceSelected) {
+        Piece* piece = board.getTile(row, col).getPiece();
+        if (!board.getTile(row, col).isEmpty() && !whoseTurn && piece->getIsWhite()) {
+            selectedRow = row;
+            selectedCol = col;
+            pieceSelected = true;
+        }
+        else if (!board.getTile(row, col).isEmpty() && whoseTurn && !piece->getIsWhite()) {
+            selectedRow = row;
+            selectedCol = col;
+            pieceSelected = true;
+        }
+
+    } 
+    else {
+        if (board.makeMove(selectedRow, selectedCol, row, col)) {
+            update(); 
+            whoseTurn = !whoseTurn;
+        }
+        pieceSelected = false;
     }
 }

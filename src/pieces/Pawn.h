@@ -1,5 +1,6 @@
 #pragma once
 #include "Piece.h"
+#include "../board/Board.h"
 
 class Pawn : public Piece
 {
@@ -13,5 +14,6 @@ public:
     int getPieceType() const override;
     bool getHasMoved() const;
     void setHasMoved(bool moved);
+    bool isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) const;
 };
 

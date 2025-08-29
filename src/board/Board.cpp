@@ -45,3 +45,28 @@ Board::~Board() {
 Tile& Board::getTile(int row, int col) {
     return chessboard[row][col];
 }
+
+bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
+    if (fromRow < 0 || fromRow >= 8 || fromCol < 0 || fromCol >= 8 ||
+        toRow < 0 || toRow >= 8 || toCol < 0 || toCol >= 8) {
+        return false;
+    }
+    
+    if (chessboard[fromRow][fromCol].isEmpty()) {
+        return false;
+    }
+    
+    Piece* piece = chessboard[fromRow][fromCol].getPiece();
+    
+    if (piece->getPieceType() == 1) {
+        Pawn* pawn = static_cast<Pawn*>(piece);
+        if (pawn->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            chessboard[toRow][toCol].setPiece(piece);
+            chessboard[fromRow][fromCol].setPiece(nullptr);
+            pawn->setHasMoved(true);
+            return true;
+        }
+    }
+    
+    return false;
+}
