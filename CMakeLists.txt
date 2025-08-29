@@ -18,7 +18,11 @@ add_executable(chess
     src/board/Tile.cpp
     src/pieces/Piece.cpp
     src/pieces/Pawn.cpp
+    src/pieces/Bishop.cpp
+    src/pieces/Knight.cpp
     src/pieces/Rook.cpp
+    src/pieces/Queen.cpp
+    src/pieces/King.cpp
 )
 
 target_link_libraries(chess PRIVATE Qt6::Widgets)
