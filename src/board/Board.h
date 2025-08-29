@@ -1,3 +1,4 @@
+#pragma once
 #include "Tile.h"
 #include <vector>
 
@@ -9,4 +10,5 @@ private:
 public:
     Board();
     ~Board();
+    Tile& getTile(int row, int col);
 };

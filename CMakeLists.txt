@@ -12,10 +12,17 @@ qt_standard_project_setup()
 
 
 add_executable(chess
-    main.cpp
-    Game.cpp
-    Board.cpp
-    Tile.cpp
+    src/main.cpp
+    src/gui/Game.cpp
+    src/board/Board.cpp
+    src/board/Tile.cpp
+    src/pieces/Piece.cpp
+    src/pieces/Pawn.cpp
+    src/pieces/Bishop.cpp
+    src/pieces/Knight.cpp
+    src/pieces/Rook.cpp
+    src/pieces/Queen.cpp
+    src/pieces/King.cpp
 )
 
 target_link_libraries(chess PRIVATE Qt6::Widgets)
