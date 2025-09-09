@@ -14,6 +14,7 @@ public:
     int getPieceType() const override;
     bool getHasMoved() const;
     void setHasMoved(bool moved);
+    bool isPromoted(int toRow, Board& board) const;
     bool isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) const;
 };
 

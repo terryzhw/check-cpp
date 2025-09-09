@@ -59,14 +59,109 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     Piece* piece = chessboard[fromRow][fromCol].getPiece();
     
     if (piece->getPieceType() == 1) {
-        Pawn* pawn = static_cast<Pawn*>(piece);
+        Pawn* pawn = dynamic_cast<Pawn*>(piece);
         if (pawn->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            if (!chessboard[toRow][toCol].isEmpty()) {
+                delete chessboard[toRow][toCol].getPiece();
+            }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
             pawn->setHasMoved(true);
+            if (pawn->isPromoted(toRow, *this)) {
+                if (pawn->getIsWhite()) {
+                    delete chessboard[toRow][toCol].getPiece();
+                    chessboard[toRow][toCol].setPiece(nullptr);
+                    whitePromote(toRow, toCol);
+                }
+                else {
+                    delete chessboard[toRow][toCol].getPiece();
+                    chessboard[toRow][toCol].setPiece(nullptr);
+                    blackPromote(toRow, toCol);
+                }
+                
+            }
             return true;
         }
+
     }
     
     return false;
+}
+
+void Board::whitePromote(int toRow, int toCol) {
+
+    int pieceNumber;
+
+    std::cout << "Promotion" << std::endl;
+    std::cout << "1: Queen" << std::endl;
+    std::cout << "2: Rook" << std::endl;
+    std::cout << "3: Bishop" << std::endl;
+    std::cout << "4: Knight" << std::endl;
+    std::cout << "Enter the piece number (1-4): ";
+    std::cin >> pieceNumber;
+    
+
+    while (true) {
+        if (pieceNumber == 1) {
+            chessboard[toRow][toCol].setPiece(new Queen(true));
+            return;
+        }
+        else if (pieceNumber == 2) {
+            chessboard[toRow][toCol].setPiece(new Rook(true));
+            return;
+        }
+        else if (pieceNumber == 3) {
+            chessboard[toRow][toCol].setPiece(new Bishop(true));
+            return;
+        }
+        else if (pieceNumber == 4) {
+            chessboard[toRow][toCol].setPiece(new Knight(true));
+            return;
+        }
+        else {
+            std::cout << "Error: invalid input" << std::endl;
+            std::cout << "Enter the piece number (1-4): ";
+            std::cin >> pieceNumber;
+        }
+    }
+
+}
+
+void Board::blackPromote(int toRow, int toCol) {
+
+    int pieceNumber;
+
+    std::cout << "Promotion" << std::endl;
+    std::cout << "1: Queen" << std::endl;
+    std::cout << "2: Rook" << std::endl;
+    std::cout << "3: Bishop" << std::endl;
+    std::cout << "4: Knight" << std::endl;
+    std::cout << "Enter the piece number (1-4): ";
+    std::cin >> pieceNumber;
+    
+
+    while (true) {
+        if (pieceNumber == 1) {
+            chessboard[toRow][toCol].setPiece(new Queen(false));
+            return;
+        }
+        else if (pieceNumber == 2) {
+            chessboard[toRow][toCol].setPiece(new Rook(false));
+            return;
+        }
+        else if (pieceNumber == 3) {
+            chessboard[toRow][toCol].setPiece(new Bishop(false));
+            return;
+        }
+        else if (pieceNumber == 4) {
+            chessboard[toRow][toCol].setPiece(new Knight(false));
+            return;
+        }
+        else {
+            std::cout << "Error: invalid input" << std::endl;
+            std::cout << "Enter the piece number (1-4): ";
+            std::cin >> pieceNumber;
+        }
+    }
+
 }

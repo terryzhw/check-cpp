@@ -1,7 +1,6 @@
 #include "Game.h"
 #include <QBrush>
 #include <QColor>
-#include "../pieces/Pawn.h"
 
 Game::Game(QWidget* parent) : QWidget(parent) {
     setFixedSize(800, 800);
@@ -30,6 +29,11 @@ void Game::paintEvent(QPaintEvent* event) {
             } else {
                 // dark tiles
                 painter.fillRect(col * tileSize, row * tileSize, tileSize, tileSize, QColor(112, 162, 163));
+            }
+            
+            // highlight
+            if (pieceSelected && row == selectedRow && col == selectedCol) {
+                painter.fillRect(col * tileSize, row * tileSize, tileSize, tileSize, QColor(255, 255, 0, 128));
             }
         }
     }
@@ -124,19 +128,21 @@ void Game::mousePressEvent(QMouseEvent* event) {
             selectedRow = row;
             selectedCol = col;
             pieceSelected = true;
+            update();
         }
         else if (!board.getTile(row, col).isEmpty() && whoseTurn && !piece->getIsWhite()) {
             selectedRow = row;
             selectedCol = col;
             pieceSelected = true;
+            update();
         }
 
     } 
     else {
         if (board.makeMove(selectedRow, selectedCol, row, col)) {
-            update(); 
             whoseTurn = !whoseTurn;
         }
         pieceSelected = false;
+        update(); 
     }
 }
