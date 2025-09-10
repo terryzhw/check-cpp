@@ -1,7 +1,7 @@
 #include "Rook.h"
 
 Rook::Rook(bool isWhite) : Piece(isWhite, true) {
-
+    hasMoved = false;
 }
 
 Rook::~Rook() {
@@ -10,6 +10,14 @@ Rook::~Rook() {
 
 int Rook::getPieceType() const {
     return 4;
+}
+
+bool Rook::getHasMoved() const {
+    return hasMoved;
+}
+
+void Rook::setHasMoved(bool moved) {
+    hasMoved = moved;
 }
 
 bool Rook::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) const {

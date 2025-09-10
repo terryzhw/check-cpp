@@ -30,7 +30,7 @@ void Pawn::setPassantVulnerable(bool vulnerable) {
 }
 
 
-bool Pawn::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) {
+bool Pawn::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) const {
     if (toRow < 0 || toRow >= 8 || toCol < 0 || toCol >= 8) {
         return false;
     }

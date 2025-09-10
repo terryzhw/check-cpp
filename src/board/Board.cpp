@@ -38,6 +38,13 @@ Board::Board() {
 }
 
 Board::~Board() {
+    for (int row = 0; row < 8; row++) {
+        for (int col = 0; col < 8; col++) {
+            if (!chessboard[row][col].isEmpty()) {
+                delete chessboard[row][col].getPiece();
+            }
+        }
+    }
 }
 
 Tile& Board::getTile(int row, int col) {
@@ -126,12 +133,30 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
             return true;
         }
     }
+
+    else if (piece->getPieceType() == 2) {
+        Bishop* bishop = dynamic_cast<Bishop*>(piece);
+
+        if (bishop->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            if (!chessboard[toRow][toCol].isEmpty()) {
+                delete chessboard[toRow][toCol].getPiece();
+            }
+            chessboard[toRow][toCol].setPiece(piece);
+            chessboard[fromRow][fromCol].setPiece(nullptr);
+            return true;
+        }
+    }
     
     else if (piece->getPieceType() == 4) {
         Rook* rook = dynamic_cast<Rook*>(piece);
         if (rook->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            if (!chessboard[toRow][toCol].isEmpty()) {
+                delete chessboard[toRow][toCol].getPiece();
+            }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
+
+            rook->setHasMoved(true);
             return true;
         }
     }

@@ -18,6 +18,6 @@ public:
     void setHasMoved(bool moved);
     void setPassantVulnerable(bool vulnerable);
     bool isPromoted(int toRow, Board& board) const;
-    bool isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board);
+    bool isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) const;
 };
 
