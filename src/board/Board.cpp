@@ -35,8 +35,6 @@ Board::Board() {
 
     chessboard[7][4].setPiece(new King(true));
     chessboard[0][4].setPiece(new King(false));
-
-
 }
 
 Board::~Board() {
@@ -55,18 +53,63 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     if (chessboard[fromRow][fromCol].isEmpty()) {
         return false;
     }
+
+    // reset en passant vulnerability
+    bool movingPieceColor = chessboard[fromRow][fromCol].getPiece()->getIsWhite();
+    for (int row = 0; row < 8; row++) {
+        for (int col = 0; col < 8; col++) {
+            if (!chessboard[row][col].isEmpty() && chessboard[row][col].getPiece()->getPieceType() == 1) {
+                Pawn* pawn = dynamic_cast<Pawn*>(chessboard[row][col].getPiece());
+                if (pawn->getIsWhite() == movingPieceColor) {
+                    pawn->setPassantVulnerable(false);
+                }
+            }
+        }
+    }
     
     Piece* piece = chessboard[fromRow][fromCol].getPiece();
     
     if (piece->getPieceType() == 1) {
         Pawn* pawn = dynamic_cast<Pawn*>(piece);
         if (pawn->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
             }
+
+            else if (abs(toCol - fromCol) == 1 && chessboard[toRow][toCol].isEmpty()) {
+                if (toCol == fromCol + 1 && fromCol + 1 < 8 && !chessboard[fromRow][fromCol+1].isEmpty()){
+                    Piece* capturedPiece = chessboard[fromRow][fromCol+1].getPiece();
+                    if (capturedPiece->getPieceType() == 1) {
+                        Pawn* capturedPawn = dynamic_cast<Pawn*>(capturedPiece);
+                        if (capturedPawn->getPassantVulnerable()) {
+                            delete chessboard[fromRow][fromCol+1].getPiece();
+                        }
+                    }
+                }
+                else if (toCol == fromCol - 1 && fromCol - 1 >= 0 && !chessboard[fromRow][fromCol-1].isEmpty()){
+                    Piece* capturedPiece = chessboard[fromRow][fromCol-1].getPiece();
+                    if (capturedPiece->getPieceType() == 1) {
+                        Pawn* capturedPawn = dynamic_cast<Pawn*>(capturedPiece);
+                        if (capturedPawn->getPassantVulnerable()) {
+                            delete chessboard[fromRow][fromCol-1].getPiece();
+                            chessboard[fromRow][fromCol-1].setPiece(nullptr);
+                        }
+                    }
+                }
+            }
+            
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
             pawn->setHasMoved(true);
+            
+            // en passant vulnerability flag
+
+            if (abs(toRow - fromRow) == 2) {
+                pawn->setPassantVulnerable(true);
+            }
+
+
             if (pawn->isPromoted(toRow, *this)) {
                 if (pawn->getIsWhite()) {
                     delete chessboard[toRow][toCol].getPiece();
@@ -82,7 +125,15 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
             }
             return true;
         }
-
+    }
+    
+    else if (piece->getPieceType() == 4) {
+        Rook* rook = dynamic_cast<Rook*>(piece);
+        if (rook->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            chessboard[toRow][toCol].setPiece(piece);
+            chessboard[fromRow][fromCol].setPiece(nullptr);
+            return true;
+        }
     }
     
     return false;

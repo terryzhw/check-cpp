@@ -2,6 +2,7 @@
 
 Pawn::Pawn(bool isWhite) : Piece(isWhite, true) {
     hasMoved = false;
+    passantVulnerable = false;
 }
 
 Pawn::~Pawn() {
@@ -16,11 +17,20 @@ bool Pawn::getHasMoved() const {
     return hasMoved;
 }
 
+bool Pawn::getPassantVulnerable() const {
+    return passantVulnerable;
+}
+
 void Pawn::setHasMoved(bool moved) {
     hasMoved = moved;
 }
 
-bool Pawn::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) const {
+void Pawn::setPassantVulnerable(bool vulnerable) {
+    passantVulnerable = vulnerable;
+}
+
+
+bool Pawn::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) {
     if (toRow < 0 || toRow >= 8 || toCol < 0 || toCol >= 8) {
         return false;
     }
@@ -49,6 +59,21 @@ bool Pawn::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& bo
         if (!board.getTile(toRow, toCol).isEmpty()) {
             Piece* targetPiece = board.getTile(toRow, toCol).getPiece();
             return targetPiece->getIsWhite() != isWhite;
+        }
+        //en passant
+        else if (toCol == fromCol + 1 && fromCol + 1 < 8 && !board.getTile(fromRow, fromCol+1).isEmpty()) {
+            Piece* targetPiece = board.getTile(fromRow, fromCol+1).getPiece();
+            if (targetPiece->getPieceType() == 1 && targetPiece->getIsWhite() != isWhite) {
+                Pawn* targetPawn = dynamic_cast<Pawn*>(targetPiece);
+                return targetPawn->getPassantVulnerable();
+            }
+        }
+        else if (toCol == fromCol - 1 && fromCol - 1 >= 0 && !board.getTile(fromRow, fromCol-1).isEmpty()) {
+            Piece* targetPiece = board.getTile(fromRow, fromCol-1).getPiece();
+            if (targetPiece->getPieceType() == 1 && targetPiece->getIsWhite() != isWhite) {
+                Pawn* targetPawn = dynamic_cast<Pawn*>(targetPiece);
+                return targetPawn->getPassantVulnerable();
+            }
         }
     }
 

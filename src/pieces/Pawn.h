@@ -6,6 +6,7 @@ class Pawn : public Piece
 {
 private:
     bool hasMoved;
+    bool passantVulnerable;
     
 public:
     Pawn(bool isWhite);
@@ -13,8 +14,10 @@ public:
 
     int getPieceType() const override;
     bool getHasMoved() const;
+    bool getPassantVulnerable() const;
     void setHasMoved(bool moved);
+    void setPassantVulnerable(bool vulnerable);
     bool isPromoted(int toRow, Board& board) const;
-    bool isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) const;
+    bool isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board);
 };
 
