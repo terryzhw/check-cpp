@@ -35,6 +35,8 @@ Board::Board() {
 
     chessboard[7][4].setPiece(new King(true));
     chessboard[0][4].setPiece(new King(false));
+
+    moves = 0;
 }
 
 Board::~Board() {
@@ -50,6 +52,15 @@ Board::~Board() {
 Tile& Board::getTile(int row, int col) {
     return chessboard[row][col];
 }
+
+int Board::getMoves() const {
+    return moves;
+}
+
+void Board::setMoves(int move) {
+    moves = move;
+}
+
 
 bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     if (fromRow < 0 || fromRow >= 8 || fromCol < 0 || fromCol >= 8 ||
@@ -146,7 +157,17 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
             return true;
         }
     }
-    
+    else if (piece->getPieceType() == 3) {
+        Knight* knight = dynamic_cast<Knight*>(piece);
+        if (knight->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            if (!chessboard[toRow][toCol].isEmpty()) {
+                delete chessboard[toRow][toCol].getPiece();
+            }
+            chessboard[toRow][toCol].setPiece(piece);
+            chessboard[fromRow][fromCol].setPiece(nullptr);
+            return true;
+        }
+    }
     else if (piece->getPieceType() == 4) {
         Rook* rook = dynamic_cast<Rook*>(piece);
         if (rook->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
@@ -174,11 +195,36 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     else if (piece->getPieceType() == 6) {
         King* king = dynamic_cast<King*>(piece);
         if (king->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            int colDiff = toCol - fromCol;
+            
+            if (!king->getHasMoved() && abs(colDiff) == 2) {
+                // king side 
+                if (colDiff == 2) {
+                    Piece* rook = chessboard[fromRow][7].getPiece();
+                    chessboard[fromRow][5].setPiece(rook);
+                    chessboard[fromRow][7].setPiece(nullptr);
+                    
+                    Rook* castleRook = dynamic_cast<Rook*>(rook);
+                    castleRook->setHasMoved(true);
+                }
+                // queen side
+                else if (colDiff == -2) {
+                    Piece* rook = chessboard[fromRow][0].getPiece();
+                    chessboard[fromRow][3].setPiece(rook);
+                    chessboard[fromRow][0].setPiece(nullptr);
+                    
+                    Rook* castleRook = dynamic_cast<Rook*>(rook);
+                    castleRook->setHasMoved(true);
+                }
+            }
+            
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
             }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
+
+            king->setHasMoved(true);
             return true;
         }
     }
