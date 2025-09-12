@@ -1,1 +1,1 @@
-# cpp-chess
+# CheckCPP
