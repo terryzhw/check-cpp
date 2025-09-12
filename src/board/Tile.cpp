@@ -5,7 +5,9 @@ Tile::Tile() {
 }
 
 Tile::~Tile() {
-
+    if (piece != nullptr) {
+        delete piece;
+    }
 }
 
 Piece* Tile::getPiece() const {

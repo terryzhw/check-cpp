@@ -5,6 +5,10 @@
 Game::Game(QWidget* parent) : QWidget(parent) {
     setFixedSize(800, 800);
     setWindowTitle("Chess");
+    selectedRow = -1;
+    selectedCol = -1;
+    pieceSelected = false;
+    whoseTurn = false;
 }
 
 Game::~Game() {
@@ -25,6 +29,11 @@ void Game::paintEvent(QPaintEvent* event) {
             } else {
                 // dark tiles
                 painter.fillRect(col * tileSize, row * tileSize, tileSize, tileSize, QColor(112, 162, 163));
+            }
+            
+            // highlight
+            if (pieceSelected && row == selectedRow && col == selectedCol) {
+                painter.fillRect(col * tileSize, row * tileSize, tileSize, tileSize, QColor(255, 255, 0, 128));
             }
         }
     }
@@ -101,5 +110,39 @@ void Game::paintEvent(QPaintEvent* event) {
                 }
             }
         }
+    }
+}
+
+void Game::mousePressEvent(QMouseEvent* event) {
+    int tileSize = 75;
+    int col = event->position().x() / tileSize;
+    int row = event->position().y() / tileSize;
+    
+    if (row < 0 || row >= 8 || col < 0 || col >= 8) {
+        return;
+    }
+    
+    if (!pieceSelected) {
+        Piece* piece = board.getTile(row, col).getPiece();
+        if (!board.getTile(row, col).isEmpty() && !whoseTurn && piece->getIsWhite()) {
+            selectedRow = row;
+            selectedCol = col;
+            pieceSelected = true;
+            update();
+        }
+        else if (!board.getTile(row, col).isEmpty() && whoseTurn && !piece->getIsWhite()) {
+            selectedRow = row;
+            selectedCol = col;
+            pieceSelected = true;
+            update();
+        }
+
+    } 
+    else {
+        if (board.makeMove(selectedRow, selectedCol, row, col)) {
+            whoseTurn = !whoseTurn;
+        }
+        pieceSelected = false;
+        update(); 
     }
 }
