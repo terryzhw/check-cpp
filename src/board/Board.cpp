@@ -160,6 +160,28 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
             return true;
         }
     }
+    else if (piece->getPieceType() == 5) {
+        Queen* queen = dynamic_cast<Queen*>(piece);
+        if (queen->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            if (!chessboard[toRow][toCol].isEmpty()) {
+                delete chessboard[toRow][toCol].getPiece();
+            }
+            chessboard[toRow][toCol].setPiece(piece);
+            chessboard[fromRow][fromCol].setPiece(nullptr);
+            return true;
+        }
+    }
+    else if (piece->getPieceType() == 6) {
+        King* king = dynamic_cast<King*>(piece);
+        if (king->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            if (!chessboard[toRow][toCol].isEmpty()) {
+                delete chessboard[toRow][toCol].getPiece();
+            }
+            chessboard[toRow][toCol].setPiece(piece);
+            chessboard[fromRow][fromCol].setPiece(nullptr);
+            return true;
+        }
+    }
     
     return false;
 }
