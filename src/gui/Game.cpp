@@ -42,71 +42,77 @@ void Game::paintEvent(QPaintEvent* event) {
         for (int col = 0; col < 8; col++) {
             if (!board.getTile(row, col).isEmpty()) {
                 Piece* piece = board.getTile(row, col).getPiece();
-                if (piece->getPieceType() == 1) {  
+                if (piece->getPieceType() == 1) {
                   QPixmap pawnSprite;
                   if (piece->getIsWhite()) {
                       pawnSprite.load("../src/assets/w_pawn.png");
                   } else {
                       pawnSprite.load("../src/assets/b_pawn.png");
                   }
-                  int x = col * tileSize;
-                  int y = row * tileSize;
-                  painter.drawPixmap(x, y, tileSize, tileSize, pawnSprite);
+                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int x = col * tileSize + (tileSize - pieceSize) / 2;
+                  int y = row * tileSize + (tileSize - pieceSize) / 2;
+                  painter.drawPixmap(x, y, pieceSize, pieceSize, pawnSprite);
                 }
-                else if (piece->getPieceType() == 2) {  
+                else if (piece->getPieceType() == 2) {
                   QPixmap bishopSprite;
                   if (piece->getIsWhite()) {
                       bishopSprite.load("../src/assets/w_bishop.png");
                   } else {
                       bishopSprite.load("../src/assets/b_bishop.png");
                   }
-                  int x = col * tileSize;
-                  int y = row * tileSize;
-                  painter.drawPixmap(x, y, tileSize, tileSize, bishopSprite);
+                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int x = col * tileSize + (tileSize - pieceSize) / 2;
+                  int y = row * tileSize + (tileSize - pieceSize) / 2;
+                  painter.drawPixmap(x, y, pieceSize, pieceSize, bishopSprite);
                 }
-                else if (piece->getPieceType() == 3) {  
+                else if (piece->getPieceType() == 3) {
                   QPixmap knightSprite;
                   if (piece->getIsWhite()) {
                       knightSprite.load("../src/assets/w_knight.png");
                   } else {
                       knightSprite.load("../src/assets/b_knight.png");
                   }
-                  int x = col * tileSize;
-                  int y = row * tileSize;
-                  painter.drawPixmap(x, y, tileSize, tileSize, knightSprite);
+                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int x = col * tileSize + (tileSize - pieceSize) / 2;
+                  int y = row * tileSize + (tileSize - pieceSize) / 2;
+                  painter.drawPixmap(x, y, pieceSize, pieceSize, knightSprite);
                 }
-                else if (piece->getPieceType() == 4) {  
+                else if (piece->getPieceType() == 4) {
                   QPixmap rookSprite;
                   if (piece->getIsWhite()) {
                       rookSprite.load("../src/assets/w_rook.png");
                   } else {
                       rookSprite.load("../src/assets/b_rook.png");
                   }
-                  int x = col * tileSize;
-                  int y = row * tileSize;
-                  painter.drawPixmap(x, y, tileSize, tileSize, rookSprite);
+                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int x = col * tileSize + (tileSize - pieceSize) / 2;
+                  int y = row * tileSize + (tileSize - pieceSize) / 2;
+                  painter.drawPixmap(x, y, pieceSize, pieceSize, rookSprite);
                 }
-                else if (piece->getPieceType() == 5) {  
+                else if (piece->getPieceType() == 5) {
                   QPixmap queenSprite;
                   if (piece->getIsWhite()) {
                       queenSprite.load("../src/assets/w_queen.png");
                   } else {
                       queenSprite.load("../src/assets/b_queen.png");
                   }
-                  int x = col * tileSize;
-                  int y = row * tileSize;
-                  painter.drawPixmap(x, y, tileSize, tileSize, queenSprite);
+                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int x = col * tileSize + (tileSize - pieceSize) / 2;
+                  int y = row * tileSize + (tileSize - pieceSize) / 2;
+                  painter.drawPixmap(x, y, pieceSize, pieceSize, queenSprite);
                 }
-                else if (piece->getPieceType() == 6) {  
+                else if (piece->getPieceType() == 6) {
                   QPixmap kingSprite;
                   if (piece->getIsWhite()) {
                       kingSprite.load("../src/assets/w_king.png");
                   } else {
                       kingSprite.load("../src/assets/b_king.png");
                   }
-                  int x = col * tileSize;
-                  int y = row * tileSize;
-                  painter.drawPixmap(x, y, tileSize, tileSize, kingSprite);
+                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int x = col * tileSize + (tileSize - pieceSize) / 2;
+                  int y = row * tileSize + (tileSize - pieceSize) / 2;
+                  painter.drawPixmap(x, y, pieceSize, pieceSize, kingSprite);
                 }
             }
         }
