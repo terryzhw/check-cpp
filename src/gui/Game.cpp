@@ -49,7 +49,7 @@ void Game::paintEvent(QPaintEvent* event) {
                   } else {
                       pawnSprite.load("../src/assets/b_pawn.png");
                   }
-                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int pieceSize = tileSize - 10;
                   int x = col * tileSize + (tileSize - pieceSize) / 2;
                   int y = row * tileSize + (tileSize - pieceSize) / 2;
                   painter.drawPixmap(x, y, pieceSize, pieceSize, pawnSprite);
@@ -61,7 +61,7 @@ void Game::paintEvent(QPaintEvent* event) {
                   } else {
                       bishopSprite.load("../src/assets/b_bishop.png");
                   }
-                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int pieceSize = tileSize - 10; 
                   int x = col * tileSize + (tileSize - pieceSize) / 2;
                   int y = row * tileSize + (tileSize - pieceSize) / 2;
                   painter.drawPixmap(x, y, pieceSize, pieceSize, bishopSprite);
@@ -73,7 +73,7 @@ void Game::paintEvent(QPaintEvent* event) {
                   } else {
                       knightSprite.load("../src/assets/b_knight.png");
                   }
-                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int pieceSize = tileSize - 10;  
                   int x = col * tileSize + (tileSize - pieceSize) / 2;
                   int y = row * tileSize + (tileSize - pieceSize) / 2;
                   painter.drawPixmap(x, y, pieceSize, pieceSize, knightSprite);
@@ -85,7 +85,7 @@ void Game::paintEvent(QPaintEvent* event) {
                   } else {
                       rookSprite.load("../src/assets/b_rook.png");
                   }
-                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int pieceSize = tileSize - 10;  // Leave 5px margin
                   int x = col * tileSize + (tileSize - pieceSize) / 2;
                   int y = row * tileSize + (tileSize - pieceSize) / 2;
                   painter.drawPixmap(x, y, pieceSize, pieceSize, rookSprite);
@@ -97,7 +97,7 @@ void Game::paintEvent(QPaintEvent* event) {
                   } else {
                       queenSprite.load("../src/assets/b_queen.png");
                   }
-                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int pieceSize = tileSize - 10;  
                   int x = col * tileSize + (tileSize - pieceSize) / 2;
                   int y = row * tileSize + (tileSize - pieceSize) / 2;
                   painter.drawPixmap(x, y, pieceSize, pieceSize, queenSprite);
@@ -109,7 +109,7 @@ void Game::paintEvent(QPaintEvent* event) {
                   } else {
                       kingSprite.load("../src/assets/b_king.png");
                   }
-                  int pieceSize = tileSize - 5;  // Leave 5px margin
+                  int pieceSize = tileSize - 10;  
                   int x = col * tileSize + (tileSize - pieceSize) / 2;
                   int y = row * tileSize + (tileSize - pieceSize) / 2;
                   painter.drawPixmap(x, y, pieceSize, pieceSize, kingSprite);

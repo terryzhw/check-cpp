@@ -23,6 +23,14 @@ void King::setHasMoved(bool moved) {
     hasMoved = moved;
 }
 
+bool King::getIsChecked() const {
+    return isChecked;
+}
+
+void King::setIsChecked(bool check) {
+    isChecked = check;
+}
+
 
 bool King::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) const {
     if (toRow < 0 || toRow >= 8 || toCol < 0 || toCol >= 8) {
