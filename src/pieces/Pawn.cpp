@@ -84,3 +84,22 @@ bool Pawn::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& bo
 bool Pawn::isPromoted(int toRow, Board& board) const {
     return (isWhite && toRow == 0) || (!isWhite && toRow == 7);
 }
+
+bool Pawn::canAttack(int fromRow, int fromCol, int toRow, int toCol) const {
+    if (toRow < 0 || toRow >= 8 || toCol < 0 || toCol >= 8) {
+        return false;
+    }
+
+    int direction;
+    
+    if (isWhite) {
+        direction = -1;
+    } else {
+        direction = 1;
+    }
+
+    int rowDiff = toRow - fromRow;
+    int colDiff = abs(toCol - fromCol);
+
+    return (colDiff == 1 && rowDiff == direction);
+}

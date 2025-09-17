@@ -48,7 +48,7 @@ bool King::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& bo
         return true;
     }
 
-    // king side 
+    // king side
     else if (!hasMoved && rowDiff == 0 && colDiff == 2) {
         if (board.getTile(toRow, toCol).isEmpty() && board.getTile(toRow, toCol-1).isEmpty()) {
             if (!board.getTile(toRow, toCol+1).isEmpty()) {
@@ -56,6 +56,15 @@ bool King::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& bo
                 if (targetPiece->getPieceType() == 4 && targetPiece->getIsWhite() == isWhite) {
                     Rook* targetRook = dynamic_cast<Rook*>(targetPiece);
                     if (!targetRook->getHasMoved()) {
+                        if (board.kingCheck(isWhite)) {
+                            return false;
+                        }
+                        if (board.beKingCheck(fromRow, fromCol, fromRow, fromCol + 1, isWhite)) {
+                            return false;
+                        }
+                        if (board.beKingCheck(fromRow, fromCol, toRow, toCol, isWhite)) {
+                            return false;
+                        }
                         return true;
                     }
                 }
@@ -63,7 +72,7 @@ bool King::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& bo
         }
     }
 
-    // queen side 
+    // queen side
     else if (!hasMoved && rowDiff == 0 && colDiff == -2) {
         if (board.getTile(toRow, toCol).isEmpty() && board.getTile(toRow, toCol+1).isEmpty() && board.getTile(toRow, toCol-1).isEmpty()) {
             if (!board.getTile(toRow, toCol-2).isEmpty()) {
@@ -71,6 +80,15 @@ bool King::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& bo
                 if (targetPiece->getPieceType() == 4 && targetPiece->getIsWhite() == isWhite) {
                     Rook* targetRook = dynamic_cast<Rook*>(targetPiece);
                     if (!targetRook->getHasMoved()) {
+                        if (board.kingCheck(isWhite)) {
+                            return false;
+                        }
+                        if (board.beKingCheck(fromRow, fromCol, fromRow, fromCol - 1, isWhite)) {
+                            return false;
+                        }
+                        if (board.beKingCheck(fromRow, fromCol, toRow, toCol, isWhite)) {
+                            return false;
+                        }
                         return true;
                     }
                 }

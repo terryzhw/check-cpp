@@ -19,6 +19,8 @@ public:
     void blackPromote(int toRow, int toCol);
     bool findKing(bool kingColor, int& kingRow, int& kingCol) const;
     bool kingCheck(bool kingColor);
+    bool beKingCheck(int fromRow, int fromCol, int toRow, int toCol, bool kingColor);
+    bool isCheckmate(bool kingColor);
 
     
 };

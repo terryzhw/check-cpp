@@ -19,5 +19,6 @@ public:
     void setPassantVulnerable(bool vulnerable);
     bool isPromoted(int toRow, Board& board) const;
     bool isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& board) const;
+    bool canAttack(int fromRow, int fromCol, int toRow, int toCol) const;
 };
 
