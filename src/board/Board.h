@@ -20,7 +20,10 @@ public:
     bool findKing(bool kingColor, int& kingRow, int& kingCol) const;
     bool kingCheck(bool kingColor);
     bool beKingCheck(int fromRow, int fromCol, int toRow, int toCol, bool kingColor);
+    bool noLegalMoves(bool kingColor);
     bool isCheckmate(bool kingColor);
+    bool isStalemate(bool kingColor);
+    void gameState(bool pieceColor);
 
     
 };

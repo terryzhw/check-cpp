@@ -147,14 +147,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
 
             }
 
-            if (isCheckmate(!pieceColor)) {
-                if (pieceColor) {
-                    std::cout << "Checkmate! White wins!" << std::endl;
-                }
-                else {
-                    std::cout << "Checkmate! Black wins!" << std::endl;
-                }
-            }
+            gameState(pieceColor);
             return true;
         }
     }
@@ -169,14 +162,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
 
-            if (isCheckmate(!pieceColor)) {
-                if (pieceColor) {
-                    std::cout << "Checkmate! White wins!" << std::endl;
-                }
-                else {
-                    std::cout << "Checkmate! Black wins!" << std::endl;
-                }
-            }
+            gameState(pieceColor);
             return true;
         }
     }
@@ -189,14 +175,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
 
-            if (isCheckmate(!pieceColor)) {
-                if (pieceColor) {
-                    std::cout << "Checkmate! White wins!" << std::endl;
-                }
-                else {
-                    std::cout << "Checkmate! Black wins!" << std::endl;
-                }
-            }
+            gameState(pieceColor);
             return true;
         }
     }
@@ -211,14 +190,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
 
             rook->setHasMoved(true);
 
-            if (isCheckmate(!pieceColor)) {
-                if (pieceColor) {
-                    std::cout << "Checkmate! White wins!" << std::endl;
-                }
-                else {
-                    std::cout << "Checkmate! Black wins!" << std::endl;
-                }
-            }
+            gameState(pieceColor);
             return true;
         }
     }
@@ -231,14 +203,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
 
-            if (isCheckmate(!pieceColor)) {
-                if (pieceColor) {
-                    std::cout << "Checkmate! White wins!" << std::endl;
-                }
-                else {
-                    std::cout << "Checkmate! Black wins!" << std::endl;
-                }
-            }
+            gameState(pieceColor);
             return true;
         }
     }
@@ -276,14 +241,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
 
             king->setHasMoved(true);
 
-            if (isCheckmate(!pieceColor)) {
-                if (pieceColor) {
-                    std::cout << "Checkmate! White wins!" << std::endl;
-                }
-                else {
-                    std::cout << "Checkmate! Black wins!" << std::endl;
-                }
-            }
+            gameState(pieceColor);
             return true;
         }
     }
@@ -478,15 +436,6 @@ bool Board::beKingCheck(int fromRow, int fromCol, int toRow, int toCol, bool kin
 
     bool check = kingCheck(kingColor);
 
-    if (check) {
-        if (kingColor) {
-            std::cout << "Invalid Move: White King in Check!" << std::endl;
-        }
-        else {
-            std::cout << "Invalid Move: Black King in Check!" << std::endl;
-        }
-    }
-
     chessboard[fromRow][fromCol].setPiece(ogFromPiece);
     chessboard[toRow][toCol].setPiece(ogToPiece);
 
@@ -497,11 +446,7 @@ bool Board::beKingCheck(int fromRow, int fromCol, int toRow, int toCol, bool kin
     return check;
 }
 
-bool Board::isCheckmate(bool kingColor) {
-
-    if (!kingCheck(kingColor)) {
-        return false;
-    }
+bool Board::noLegalMoves(bool kingColor) {
 
     for (int row=0; row<8; row++) {
         for (int col=0; col<8; col++) {
@@ -567,4 +512,34 @@ bool Board::isCheckmate(bool kingColor) {
     }
 
     return true;
+}
+
+bool Board::isCheckmate(bool kingColor) {
+    return kingCheck(kingColor) && noLegalMoves(kingColor);
+}
+
+bool Board::isStalemate(bool kingColor) {
+    return !kingCheck(kingColor) && noLegalMoves(kingColor);
+}
+
+void Board::gameState(bool pieceColor) {
+    if (isCheckmate(!pieceColor)) {
+        if (pieceColor) {
+            std::cout << "Checkmate! White wins!" << std::endl;
+        }
+        else {
+            std::cout << "Checkmate! Black wins!" << std::endl;
+        }
+    }
+    else if (isStalemate(!pieceColor)) {
+        std::cout << "Stalemate! Tie!" << std::endl;
+    }
+    else if (kingCheck(!pieceColor)) {
+        if (pieceColor) {
+            std::cout << "Check! Black King in check!" << std::endl;
+        }
+        else {
+            std::cout << "Check! White King in check!" << std::endl;
+        }
+    }
 }
