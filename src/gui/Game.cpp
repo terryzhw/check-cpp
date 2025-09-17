@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <QBrush>
 #include <QColor>
+#include <iostream>
 
 Game::Game(QWidget* parent) : QWidget(parent) {
     setFixedSize(800, 800);

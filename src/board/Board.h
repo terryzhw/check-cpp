@@ -17,5 +17,9 @@ public:
     void setMoves(int move);
     void whitePromote(int toRow, int toCol);
     void blackPromote(int toRow, int toCol);
+    bool findKing(bool kingColor, int& kingRow, int& kingCol) const;
+    bool kingCheck(bool kingColor);
+
     
 };
+
