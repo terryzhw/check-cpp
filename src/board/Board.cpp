@@ -442,9 +442,36 @@ bool Board::kingCheck(bool kingColor) {
     return false;
 }
 
-bool Board::beKingCheck(int fromRow, int fromCol, int toRow, int toCol, bool kingColor) { 
+bool Board::beKingCheck(int fromRow, int fromCol, int toRow, int toCol, bool kingColor) {
     Piece* ogFromPiece = chessboard[fromRow][fromCol].getPiece();
     Piece* ogToPiece = chessboard[toRow][toCol].getPiece();
+
+    // en passant simulation
+    Piece* epPiece = nullptr;
+    int epRow = -1;
+    int epCol = -1;
+
+    if (ogFromPiece->getPieceType() == 1) { 
+        Pawn* movingPawn = dynamic_cast<Pawn*>(ogFromPiece);
+        if (abs(toCol - fromCol) == 1 && chessboard[toRow][toCol].isEmpty()) {
+            epRow = fromRow;
+            epCol = toCol;
+            epPiece = chessboard[epRow][epCol].getPiece();
+
+            if (epPiece && epPiece->getPieceType() == 1) {
+                Pawn* capturedPawn = dynamic_cast<Pawn*>(epPiece);
+                if (capturedPawn->getPassantVulnerable()) {
+                    chessboard[epRow][epCol].setPiece(nullptr);
+                }
+                else {
+                    epPiece = nullptr; 
+                }
+            }
+            else {
+                epPiece = nullptr; 
+            }
+        }
+    }
 
     chessboard[toRow][toCol].setPiece(ogFromPiece);
     chessboard[fromRow][fromCol].setPiece(nullptr);
@@ -460,10 +487,12 @@ bool Board::beKingCheck(int fromRow, int fromCol, int toRow, int toCol, bool kin
         }
     }
 
-
-
     chessboard[fromRow][fromCol].setPiece(ogFromPiece);
     chessboard[toRow][toCol].setPiece(ogToPiece);
+
+    if (epPiece) {
+        chessboard[epRow][epCol].setPiece(epPiece);
+    }
 
     return check;
 }
