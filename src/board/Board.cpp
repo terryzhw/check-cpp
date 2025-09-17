@@ -37,6 +37,7 @@ Board::Board() {
     chessboard[0][4].setPiece(new King(false));
 
     moves = 0;
+    halfMove = 0;
 }
 
 Board::~Board() {
@@ -91,11 +92,16 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     if (beKingCheck(fromRow, fromCol, toRow, toCol, pieceColor)) {
         return false;
     }
+    if (isFiftyMove()) {
+        return false;
+    }
     
     if (piece->getPieceType() == 1) {
         Pawn* pawn = dynamic_cast<Pawn*>(piece);
         if (pawn->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
-            
+
+            halfMove = 0;
+
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
             }
@@ -158,6 +164,10 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
         if (bishop->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
+                halfMove = 0;
+            }
+            else {
+                halfMove++;
             }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
@@ -171,6 +181,10 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
         if (knight->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
+                halfMove = 0;
+            }
+            else {
+                halfMove++;
             }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
@@ -184,6 +198,10 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
         if (rook->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
+                halfMove = 0;
+            }
+            else {
+                halfMove++;
             }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
@@ -199,6 +217,10 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
         if (queen->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
+                halfMove = 0;
+            }
+            else {
+                halfMove++;
             }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
@@ -232,9 +254,13 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
                     castleRook->setHasMoved(true);
                 }
             }
-            
+
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
+                halfMove = 0;
+            }
+            else {
+                halfMove++;
             }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
@@ -522,6 +548,10 @@ bool Board::isStalemate(bool kingColor) {
     return !kingCheck(kingColor) && noLegalMoves(kingColor);
 }
 
+bool Board::isFiftyMove() const {
+    return halfMove >= 100;
+}
+
 void Board::gameState(bool pieceColor) {
     if (isCheckmate(!pieceColor)) {
         if (pieceColor) {
@@ -533,6 +563,9 @@ void Board::gameState(bool pieceColor) {
     }
     else if (isStalemate(!pieceColor)) {
         std::cout << "Stalemate! Tie!" << std::endl;
+    }
+    else if (isFiftyMove()) {
+        std::cout << "Draw by 50-move rule!" << std::endl;
     }
     else if (kingCheck(!pieceColor)) {
         if (pieceColor) {

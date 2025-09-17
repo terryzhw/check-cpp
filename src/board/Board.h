@@ -6,7 +6,8 @@ class Board
 {
 private:
     std::vector<std::vector<Tile>> chessboard;
-    int moves; 
+    int moves;
+    int halfMove; 
 
 public:
     Board();
@@ -23,6 +24,7 @@ public:
     bool noLegalMoves(bool kingColor);
     bool isCheckmate(bool kingColor);
     bool isStalemate(bool kingColor);
+    bool isFiftyMove() const;
     void gameState(bool pieceColor);
 
     
