@@ -1,4 +1,4 @@
 # CheckCPP
 
-#Piece Sprites:
+# Piece Sprites:
 https://clipart-library.com/clipart/kTKopobEc.htm
