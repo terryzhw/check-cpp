@@ -35,6 +35,9 @@ Board::Board() {
 
     chessboard[7][4].setPiece(new King(true));
     chessboard[0][4].setPiece(new King(false));
+
+    moves = 0;
+    halfMove = 0;
 }
 
 Board::~Board() {
@@ -50,6 +53,15 @@ Board::~Board() {
 Tile& Board::getTile(int row, int col) {
     return chessboard[row][col];
 }
+
+int Board::getMoves() const {
+    return moves;
+}
+
+void Board::setMoves(int move) {
+    moves = move;
+}
+
 
 bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     if (fromRow < 0 || fromRow >= 8 || fromCol < 0 || fromCol >= 8 ||
@@ -75,11 +87,21 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     }
     
     Piece* piece = chessboard[fromRow][fromCol].getPiece();
+    bool pieceColor = piece->getIsWhite();
+
+    if (beKingCheck(fromRow, fromCol, toRow, toCol, pieceColor)) {
+        return false;
+    }
+    if (isFiftyMove()) {
+        return false;
+    }
     
     if (piece->getPieceType() == 1) {
         Pawn* pawn = dynamic_cast<Pawn*>(piece);
         if (pawn->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
-            
+
+            halfMove = 0;
+
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
             }
@@ -128,8 +150,10 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
                     chessboard[toRow][toCol].setPiece(nullptr);
                     blackPromote(toRow, toCol);
                 }
-                
+
             }
+
+            gameState(pieceColor);
             return true;
         }
     }
@@ -140,23 +164,51 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
         if (bishop->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
+                halfMove = 0;
+            }
+            else {
+                halfMove++;
             }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
+
+            gameState(pieceColor);
             return true;
         }
     }
-    
+    else if (piece->getPieceType() == 3) {
+        Knight* knight = dynamic_cast<Knight*>(piece);
+        if (knight->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            if (!chessboard[toRow][toCol].isEmpty()) {
+                delete chessboard[toRow][toCol].getPiece();
+                halfMove = 0;
+            }
+            else {
+                halfMove++;
+            }
+            chessboard[toRow][toCol].setPiece(piece);
+            chessboard[fromRow][fromCol].setPiece(nullptr);
+
+            gameState(pieceColor);
+            return true;
+        }
+    }
     else if (piece->getPieceType() == 4) {
         Rook* rook = dynamic_cast<Rook*>(piece);
         if (rook->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
+                halfMove = 0;
+            }
+            else {
+                halfMove++;
             }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
 
             rook->setHasMoved(true);
+
+            gameState(pieceColor);
             return true;
         }
     }
@@ -165,20 +217,57 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
         if (queen->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
+                halfMove = 0;
+            }
+            else {
+                halfMove++;
             }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
+
+            gameState(pieceColor);
             return true;
         }
     }
     else if (piece->getPieceType() == 6) {
         King* king = dynamic_cast<King*>(piece);
         if (king->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+            int colDiff = toCol - fromCol;
+            
+            if (!king->getHasMoved() && abs(colDiff) == 2) {
+                // king side 
+                if (colDiff == 2) {
+                    Piece* rook = chessboard[fromRow][7].getPiece();
+                    chessboard[fromRow][5].setPiece(rook);
+                    chessboard[fromRow][7].setPiece(nullptr);
+                    
+                    Rook* castleRook = dynamic_cast<Rook*>(rook);
+                    castleRook->setHasMoved(true);
+                }
+                // queen side
+                else if (colDiff == -2) {
+                    Piece* rook = chessboard[fromRow][0].getPiece();
+                    chessboard[fromRow][3].setPiece(rook);
+                    chessboard[fromRow][0].setPiece(nullptr);
+                    
+                    Rook* castleRook = dynamic_cast<Rook*>(rook);
+                    castleRook->setHasMoved(true);
+                }
+            }
+
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
+                halfMove = 0;
+            }
+            else {
+                halfMove++;
             }
             chessboard[toRow][toCol].setPiece(piece);
             chessboard[fromRow][fromCol].setPiece(nullptr);
+
+            king->setHasMoved(true);
+
+            gameState(pieceColor);
             return true;
         }
     }
@@ -262,4 +351,228 @@ void Board::blackPromote(int toRow, int toCol) {
         }
     }
 
+}
+
+bool Board::findKing(bool kingColor, int& kingRow, int& kingCol) const{
+    for (int row = 0; row < 8; row++) {
+        for (int col = 0; col < 8; col++) {
+            if (!chessboard[row][col].isEmpty()) {
+                Piece* piece = chessboard[row][col].getPiece();
+                if (piece->getPieceType() == 6 && piece->getIsWhite() == kingColor) {
+                    kingRow = row;
+                    kingCol = col;
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+bool Board::kingCheck(bool kingColor) {
+    int kingRow = 0;
+    int kingCol = 0;
+
+    if (!findKing(kingColor, kingRow, kingCol)) {
+        return false;
+    }
+
+    for (int row=0; row<8; row++) {
+        for (int col=0; col<8; col++) {
+            if (!chessboard[row][col].isEmpty()) {
+                Piece* piece = chessboard[row][col].getPiece();
+                if (piece->getIsWhite() != kingColor) {
+                    if (piece->getPieceType() == 1) {
+                        Pawn* pawn = dynamic_cast<Pawn*>(piece);
+                        if (pawn->canAttack(row, col, kingRow, kingCol)) {
+                            return true;
+                        }
+                    }
+                    else if (piece->getPieceType() == 2) {
+                        Bishop* bishop= dynamic_cast<Bishop*>(piece);
+                        if (bishop->isValidMove(row, col, kingRow, kingCol, *this)) {
+                            return true;
+                        }
+                    }
+                    else if (piece->getPieceType() == 3) {
+                        Knight* knight = dynamic_cast<Knight*>(piece);
+                        if (knight->isValidMove(row, col, kingRow, kingCol, *this)) {
+                            return true;
+                        }
+                    }
+                    else if (piece->getPieceType() == 4) {
+                        Rook* rook = dynamic_cast<Rook*>(piece);
+                        if (rook->isValidMove(row, col, kingRow, kingCol, *this)) {
+                            return true;
+                        }
+                    }
+                    else if (piece->getPieceType() == 5) {
+                        Queen* queen = dynamic_cast<Queen*>(piece);
+                        if (queen->isValidMove(row, col, kingRow, kingCol, *this)) {
+                            return true;
+                        }
+                    }
+                    else if (piece->getPieceType() == 6) {
+                        King* king = dynamic_cast<King*>(piece);
+                        if (king->isValidMove(row, col, kingRow, kingCol, *this)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Board::beKingCheck(int fromRow, int fromCol, int toRow, int toCol, bool kingColor) {
+    Piece* ogFromPiece = chessboard[fromRow][fromCol].getPiece();
+    Piece* ogToPiece = chessboard[toRow][toCol].getPiece();
+
+    // en passant simulation
+    Piece* epPiece = nullptr;
+    int epRow = -1;
+    int epCol = -1;
+
+    if (ogFromPiece->getPieceType() == 1) { 
+        Pawn* movingPawn = dynamic_cast<Pawn*>(ogFromPiece);
+        if (abs(toCol - fromCol) == 1 && chessboard[toRow][toCol].isEmpty()) {
+            epRow = fromRow;
+            epCol = toCol;
+            epPiece = chessboard[epRow][epCol].getPiece();
+
+            if (epPiece && epPiece->getPieceType() == 1) {
+                Pawn* capturedPawn = dynamic_cast<Pawn*>(epPiece);
+                if (capturedPawn->getPassantVulnerable()) {
+                    chessboard[epRow][epCol].setPiece(nullptr);
+                }
+                else {
+                    epPiece = nullptr; 
+                }
+            }
+            else {
+                epPiece = nullptr; 
+            }
+        }
+    }
+
+    chessboard[toRow][toCol].setPiece(ogFromPiece);
+    chessboard[fromRow][fromCol].setPiece(nullptr);
+
+    bool check = kingCheck(kingColor);
+
+    chessboard[fromRow][fromCol].setPiece(ogFromPiece);
+    chessboard[toRow][toCol].setPiece(ogToPiece);
+
+    if (epPiece) {
+        chessboard[epRow][epCol].setPiece(epPiece);
+    }
+
+    return check;
+}
+
+bool Board::noLegalMoves(bool kingColor) {
+
+    for (int row=0; row<8; row++) {
+        for (int col=0; col<8; col++) {
+            if (!chessboard[row][col].isEmpty()) {
+                Piece* piece = chessboard[row][col].getPiece();
+                if (piece->getIsWhite() == kingColor) {
+
+                    for (int toRow=0; toRow<8; toRow++) {
+                        for (int toCol=0; toCol<8; toCol++) {
+                            if (piece->getPieceType() == 1) {
+                                Pawn* pawn = dynamic_cast<Pawn*>(piece);
+                                if (pawn->isValidMove(row, col, toRow, toCol, *this)) {
+                                    if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
+                                        return false;
+                                    }
+                                }
+                            }
+                            else if (piece->getPieceType() == 2) {
+                                Bishop* bishop = dynamic_cast<Bishop*>(piece);
+                                if (bishop->isValidMove(row, col, toRow, toCol, *this)) {
+                                    if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
+                                        return false;
+                                    }
+                                }
+                            }
+                            else if (piece->getPieceType() == 3) {
+                                Knight* knight = dynamic_cast<Knight*>(piece);
+                                if (knight->isValidMove(row, col, toRow, toCol, *this)) {
+                                    if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
+                                        return false;
+                                    }
+                                }
+                            }
+                            else if (piece->getPieceType() == 4) {
+                                Rook* rook = dynamic_cast<Rook*>(piece);
+                                if (rook->isValidMove(row, col, toRow, toCol, *this)) {
+                                    if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
+                                        return false;
+                                    }
+                                }
+                            }
+                            else if (piece->getPieceType() == 5) {
+                                Queen* queen = dynamic_cast<Queen*>(piece);
+                                if (queen->isValidMove(row, col, toRow, toCol, *this)) {
+                                    if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
+                                        return false;
+                                    }
+                                }
+                            }
+                            else if (piece->getPieceType() == 6) {
+                                King* king = dynamic_cast<King*>(piece);
+                                if (king->isValidMove(row, col, toRow, toCol, *this)) {
+                                    if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool Board::isCheckmate(bool kingColor) {
+    return kingCheck(kingColor) && noLegalMoves(kingColor);
+}
+
+bool Board::isStalemate(bool kingColor) {
+    return !kingCheck(kingColor) && noLegalMoves(kingColor);
+}
+
+bool Board::isFiftyMove() const {
+    return halfMove >= 100;
+}
+
+void Board::gameState(bool pieceColor) {
+    if (isCheckmate(!pieceColor)) {
+        if (pieceColor) {
+            std::cout << "Checkmate! White wins!" << std::endl;
+        }
+        else {
+            std::cout << "Checkmate! Black wins!" << std::endl;
+        }
+    }
+    else if (isStalemate(!pieceColor)) {
+        std::cout << "Stalemate! Tie!" << std::endl;
+    }
+    else if (isFiftyMove()) {
+        std::cout << "Draw by 50-move rule!" << std::endl;
+    }
+    else if (kingCheck(!pieceColor)) {
+        if (pieceColor) {
+            std::cout << "Check! Black King in check!" << std::endl;
+        }
+        else {
+            std::cout << "Check! White King in check!" << std::endl;
+        }
+    }
 }

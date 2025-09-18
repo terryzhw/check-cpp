@@ -17,8 +17,19 @@ bool Knight::isValidMove(int fromRow, int fromCol, int toRow, int toCol, Board& 
         return false;
     }
 
+
+    int rowDiff = abs(toRow - fromRow);
+    int colDiff = abs(toCol - fromCol);
+
+
+    if ((rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2)) {
+        if (!board.getTile(toRow, toCol).isEmpty()) {
+            Piece* targetPiece = board.getTile(toRow, toCol).getPiece();
+            return targetPiece->getIsWhite() != isWhite;
+        }
+        return true;
+    }
+
     return false;
-
-
 
 }
