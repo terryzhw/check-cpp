@@ -157,12 +157,14 @@ void Game::mousePressEvent(QMouseEvent* event) {
         }
 
     }
+    // switching turns
     else {
         if (board.makeMove(selectedRow, selectedCol, row, col)) {
             whoseTurn = !whoseTurn;
 
             std::string gameMessage = board.gameState(whoseTurn);
-
+            
+            // game over popup
             if (board.isGameOver(whoseTurn)) {
                 QMessageBox::information(this, "Game Over", QString::fromStdString(gameMessage));
                 statusMessage = QString::fromStdString(gameMessage);
