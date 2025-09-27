@@ -4,12 +4,13 @@
 #include <iostream>
 
 Game::Game(QWidget* parent) : QWidget(parent) {
-    setFixedSize(800, 800);
+    setFixedSize(800, 850);
     setWindowTitle("Chess");
     selectedRow = -1;
     selectedCol = -1;
     pieceSelected = false;
     whoseTurn = false;
+    statusMessage = "White to move";
 }
 
 Game::~Game() {
@@ -118,6 +119,17 @@ void Game::paintEvent(QPaintEvent* event) {
             }
         }
     }
+
+    if (!statusMessage.isEmpty()) {
+        painter.setPen(QColor(255, 0, 0));
+        QFont font = painter.font();
+        font.setPointSize(14);
+        font.setBold(true);
+        painter.setFont(font);
+
+        QRect textRect(0, 600, 800, 50);
+        painter.drawText(textRect, Qt::AlignCenter, statusMessage);
+    }
 }
 
 void Game::mousePressEvent(QMouseEvent* event) {
@@ -144,12 +156,32 @@ void Game::mousePressEvent(QMouseEvent* event) {
             update();
         }
 
-    } 
+    }
+    // switching turns
     else {
         if (board.makeMove(selectedRow, selectedCol, row, col)) {
             whoseTurn = !whoseTurn;
+
+            std::string gameMessage = board.gameState(whoseTurn);
+            
+            // game over popup
+            if (board.isGameOver(whoseTurn)) {
+                QMessageBox::information(this, "Game Over", QString::fromStdString(gameMessage));
+                statusMessage = QString::fromStdString(gameMessage);
+            } 
+            else if (!gameMessage.empty()) {
+                statusMessage = QString::fromStdString(gameMessage);
+            } 
+            else {
+                if (whoseTurn) {
+                    statusMessage = "Black to move";
+                } 
+                else {
+                    statusMessage = "White to move";
+                }
+            }
         }
         pieceSelected = false;
-        update(); 
+        update();
     }
 }

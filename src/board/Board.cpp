@@ -552,27 +552,32 @@ bool Board::isFiftyMove() const {
     return halfMove >= 100;
 }
 
-void Board::gameState(bool pieceColor) {
+std::string Board::gameState(bool pieceColor) {
     if (isCheckmate(!pieceColor)) {
         if (pieceColor) {
-            std::cout << "Checkmate! White wins!" << std::endl;
+            return "Checkmate! White wins!";
         }
         else {
-            std::cout << "Checkmate! Black wins!" << std::endl;
+            return "Checkmate! Black wins!";
         }
     }
     else if (isStalemate(!pieceColor)) {
-        std::cout << "Stalemate! Tie!" << std::endl;
+        return "Stalemate! Tie!";
     }
     else if (isFiftyMove()) {
-        std::cout << "Draw by 50-move rule!" << std::endl;
+        return "Draw by 50-move rule!";
     }
     else if (kingCheck(!pieceColor)) {
         if (pieceColor) {
-            std::cout << "Check! Black King in check!" << std::endl;
+            return "Check! Black King in check!";
         }
         else {
-            std::cout << "Check! White King in check!" << std::endl;
+            return "Check! White King in check!";
         }
     }
+    return "";
+}
+
+bool Board::isGameOver(bool pieceColor) {
+    return isCheckmate(!pieceColor) || isStalemate(!pieceColor) || isFiftyMove();
 }

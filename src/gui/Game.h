@@ -2,6 +2,8 @@
 #include <QWidget>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QMessageBox>
+#include <QString>
 #include "../board/Board.h"
 
 class Game : public QWidget
@@ -12,6 +14,7 @@ private:
     int selectedCol;
     bool pieceSelected;
     bool whoseTurn; // false white, true black
+    QString statusMessage;
     
 public:
     Game(QWidget* parent = nullptr);

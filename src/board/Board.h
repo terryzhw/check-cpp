@@ -1,6 +1,7 @@
 #pragma once
 #include "Tile.h"
 #include <vector>
+#include <string>
 
 class Board
 {
@@ -25,7 +26,8 @@ public:
     bool isCheckmate(bool kingColor);
     bool isStalemate(bool kingColor);
     bool isFiftyMove() const;
-    void gameState(bool pieceColor);
+    std::string gameState(bool pieceColor);
+    bool isGameOver(bool pieceColor);
 
     
 };
