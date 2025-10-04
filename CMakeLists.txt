@@ -16,6 +16,7 @@ add_executable(chess
     src/gui/Game.cpp
     src/board/Board.cpp
     src/board/Tile.cpp
+    src/bot/ChessBot.cpp
     src/pieces/Piece.cpp
     src/pieces/Pawn.cpp
     src/pieces/Bishop.cpp

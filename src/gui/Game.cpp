@@ -3,14 +3,18 @@
 #include <QColor>
 #include <iostream>
 
-Game::Game(QWidget* parent) : QWidget(parent) {
+Game::Game(QWidget* parent) : QWidget(parent), bot(5) {
     setFixedSize(800, 850);
-    setWindowTitle("Chess");
+    setWindowTitle("Chess vs Bot");
     selectedRow = -1;
     selectedCol = -1;
     pieceSelected = false;
     whoseTurn = false;
     statusMessage = "White to move";
+
+    botTimer = new QTimer(this);
+    botTimer->setSingleShot(true);
+    connect(botTimer, &QTimer::timeout, this, &Game::makeBotMove);
 }
 
 Game::~Game() {
@@ -149,13 +153,6 @@ void Game::mousePressEvent(QMouseEvent* event) {
             pieceSelected = true;
             update();
         }
-        else if (!board.getTile(row, col).isEmpty() && whoseTurn && !piece->getIsWhite()) {
-            selectedRow = row;
-            selectedCol = col;
-            pieceSelected = true;
-            update();
-        }
-
     }
     // switching turns
     else {
@@ -163,19 +160,21 @@ void Game::mousePressEvent(QMouseEvent* event) {
             whoseTurn = !whoseTurn;
 
             std::string gameMessage = board.gameState(whoseTurn);
-            
+
             // game over popup
             if (board.isGameOver(whoseTurn)) {
                 QMessageBox::information(this, "Game Over", QString::fromStdString(gameMessage));
                 statusMessage = QString::fromStdString(gameMessage);
-            } 
+            }
             else if (!gameMessage.empty()) {
                 statusMessage = QString::fromStdString(gameMessage);
-            } 
+            }
             else {
                 if (whoseTurn) {
-                    statusMessage = "Black to move";
-                } 
+                    statusMessage = "Bot thinking...";
+                    update();
+                    botTimer->start(1000);
+                }
                 else {
                     statusMessage = "White to move";
                 }
@@ -184,4 +183,43 @@ void Game::mousePressEvent(QMouseEvent* event) {
         pieceSelected = false;
         update();
     }
+}
+
+void Game::makeBotMove() {
+    if (!whoseTurn) return;
+
+    Move botMove = bot.getBestMove(board, false);
+
+    if (botMove.fromRow == -1) {
+        statusMessage = "Bot has no legal moves";
+        return;
+    }
+
+    if (board.makeMove(botMove.fromRow, botMove.fromCol, botMove.toRow, botMove.toCol)) {
+        if (botMove.promotionPiece > 0) {
+            Piece* piece = board.getTile(botMove.toRow, botMove.toCol).getPiece();
+            if (piece && piece->getPieceType() == 1) {
+                delete piece;
+                board.getTile(botMove.toRow, botMove.toCol).setPiece(nullptr);
+                board.autoPromote(botMove.toRow, botMove.toCol, false, botMove.promotionPiece);
+            }
+        }
+
+        whoseTurn = !whoseTurn;
+
+        std::string gameMessage = board.gameState(whoseTurn);
+
+        if (board.isGameOver(whoseTurn)) {
+            QMessageBox::information(this, "Game Over", QString::fromStdString(gameMessage));
+            statusMessage = QString::fromStdString(gameMessage);
+        }
+        else if (!gameMessage.empty()) {
+            statusMessage = QString::fromStdString(gameMessage);
+        }
+        else {
+            statusMessage = "White to move";
+        }
+    }
+
+    update();
 }

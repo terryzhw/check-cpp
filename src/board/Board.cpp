@@ -353,6 +353,26 @@ void Board::blackPromote(int toRow, int toCol) {
 
 }
 
+void Board::autoPromote(int toRow, int toCol, bool isWhite, int pieceType) {
+    switch (pieceType) {
+        case 5:
+            chessboard[toRow][toCol].setPiece(new Queen(isWhite));
+            break;
+        case 4:
+            chessboard[toRow][toCol].setPiece(new Rook(isWhite));
+            break;
+        case 3:
+            chessboard[toRow][toCol].setPiece(new Bishop(isWhite));
+            break;
+        case 2:
+            chessboard[toRow][toCol].setPiece(new Knight(isWhite));
+            break;
+        default:
+            chessboard[toRow][toCol].setPiece(new Queen(isWhite));
+            break;
+    }
+}
+
 bool Board::findKing(bool kingColor, int& kingRow, int& kingCol) const{
     for (int row = 0; row < 8; row++) {
         for (int col = 0; col < 8; col++) {
