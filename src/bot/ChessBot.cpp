@@ -63,32 +63,44 @@ std::vector<Move> ChessBot::generateMoves(const Board& board, bool isWhite) cons
                             switch (piece->getPieceType()) {
                                 case 1: {
                                     Pawn* pawn = dynamic_cast<Pawn*>(piece);
-                                    isValidMove = pawn->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    if (pawn) {
+                                        isValidMove = pawn->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    }
                                     break;
                                 }
                                 case 2: {
                                     Bishop* bishop = dynamic_cast<Bishop*>(piece);
-                                    isValidMove = bishop->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    if (bishop) {
+                                        isValidMove = bishop->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    }
                                     break;
                                 }
                                 case 3: {
                                     Knight* knight = dynamic_cast<Knight*>(piece);
-                                    isValidMove = knight->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    if (knight) {
+                                        isValidMove = knight->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    }
                                     break;
                                 }
                                 case 4: {
                                     Rook* rook = dynamic_cast<Rook*>(piece);
-                                    isValidMove = rook->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    if (rook) {
+                                        isValidMove = rook->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    }
                                     break;
                                 }
                                 case 5: {
                                     Queen* queen = dynamic_cast<Queen*>(piece);
-                                    isValidMove = queen->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    if (queen) {
+                                        isValidMove = queen->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    }
                                     break;
                                 }
                                 case 6: {
                                     King* king = dynamic_cast<King*>(piece);
-                                    isValidMove = king->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    if (king) {
+                                        isValidMove = king->isValidMove(fromRow, fromCol, toRow, toCol, mutableBoard);
+                                    }
                                     break;
                                 }
                             }

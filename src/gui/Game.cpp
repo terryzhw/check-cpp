@@ -146,12 +146,14 @@ void Game::mousePressEvent(QMouseEvent* event) {
     }
     
     if (!pieceSelected) {
-        Piece* piece = board.getTile(row, col).getPiece();
-        if (!board.getTile(row, col).isEmpty() && !whoseTurn && piece->getIsWhite()) {
-            selectedRow = row;
-            selectedCol = col;
-            pieceSelected = true;
-            update();
+        if (!board.getTile(row, col).isEmpty() && !whoseTurn) {
+            Piece* piece = board.getTile(row, col).getPiece();
+            if (piece && piece->getIsWhite()) {
+                selectedRow = row;
+                selectedCol = col;
+                pieceSelected = true;
+                update();
+            }
         }
     }
     // switching turns
@@ -196,7 +198,7 @@ void Game::makeBotMove() {
     }
 
     if (board.makeMove(botMove.fromRow, botMove.fromCol, botMove.toRow, botMove.toCol)) {
-        if (botMove.promotionPiece > 0) {
+        if (botMove.promotionPiece > 0 && !board.getTile(botMove.toRow, botMove.toCol).isEmpty()) {
             Piece* piece = board.getTile(botMove.toRow, botMove.toCol).getPiece();
             if (piece && piece->getPieceType() == 1) {
                 delete piece;
