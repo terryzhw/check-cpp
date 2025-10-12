@@ -25,7 +25,7 @@ private:
     void restoreBoard(Board& target, const Board& source) const;
 
 public:
-    ChessBot(int depth = 3);
+    ChessBot(int depth = 4);
     Move getBestMove(Board& board, bool botColor) const;
     void setSearchDepth(int depth);
     int getSearchDepth() const;

@@ -4,8 +4,8 @@
 #include <iostream>
 
 Game::Game(QWidget* parent) : QWidget(parent), bot(5) {
-    setFixedSize(800, 850);
-    setWindowTitle("Chess vs Bot");
+    setFixedSize(600, 650);
+    setWindowTitle("Check-CPP");
     selectedRow = -1;
     selectedCol = -1;
     pieceSelected = false;
@@ -131,7 +131,7 @@ void Game::paintEvent(QPaintEvent* event) {
         font.setBold(true);
         painter.setFont(font);
 
-        QRect textRect(0, 600, 800, 50);
+        QRect textRect(0, 600, 600, 50);
         painter.drawText(textRect, Qt::AlignCenter, statusMessage);
     }
 }
