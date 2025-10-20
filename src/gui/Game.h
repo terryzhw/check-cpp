@@ -14,16 +14,19 @@ class Game : public QWidget
 
 private:
     Board board;
-    ChessBot bot;
+    ChessBot blackBot;
+    ChessBot whiteBot;
     int selectedRow;
     int selectedCol;
     bool pieceSelected;
     bool whoseTurn; // false white, true black
     QString statusMessage;
     QTimer* botTimer;
-    
+    bool isPlayerVsBot;
+    bool playerIsWhite;
+
 public:
-    Game(QWidget* parent = nullptr);
+    Game(bool playerVsBot, int whiteBotDepth, int blackBotDepth, QWidget* parent = nullptr);
     ~Game();
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;

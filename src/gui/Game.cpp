@@ -3,18 +3,27 @@
 #include <QColor>
 #include <iostream>
 
-Game::Game(QWidget* parent) : QWidget(parent), bot(5) {
+Game::Game(bool playerVsBot, int whiteBotDepth, int blackBotDepth, QWidget* parent)
+    : QWidget(parent), blackBot(blackBotDepth), whiteBot(whiteBotDepth) {
     setFixedSize(600, 650);
-    setWindowTitle("Check-CPP");
+    setWindowTitle("CheckCPP");
     selectedRow = -1;
     selectedCol = -1;
     pieceSelected = false;
     whoseTurn = false;
-    statusMessage = "White to move";
+    isPlayerVsBot = playerVsBot;
+    playerIsWhite = true; 
 
     botTimer = new QTimer(this);
     botTimer->setSingleShot(true);
     connect(botTimer, &QTimer::timeout, this, &Game::makeBotMove);
+
+    if (isPlayerVsBot) {
+        statusMessage = "White to move";
+    } else {
+        statusMessage = "White Bot thinking...";
+        botTimer->start(1000);
+    }
 }
 
 Game::~Game() {
@@ -137,18 +146,30 @@ void Game::paintEvent(QPaintEvent* event) {
 }
 
 void Game::mousePressEvent(QMouseEvent* event) {
+    // Only allow human input in player vs bot mode
+    if (!isPlayerVsBot) {
+        return;
+    }
+
     int tileSize = 75;
     int col = event->position().x() / tileSize;
     int row = event->position().y() / tileSize;
-    
+
     if (row < 0 || row >= 8 || col < 0 || col >= 8) {
         return;
     }
-    
+
+    // Only allow moves when it's player's turn
+    bool isPlayerTurn = (playerIsWhite && !whoseTurn) || (!playerIsWhite && whoseTurn);
+    if (!isPlayerTurn) {
+        return;
+    }
+
     if (!pieceSelected) {
-        if (!board.getTile(row, col).isEmpty() && !whoseTurn) {
+        if (!board.getTile(row, col).isEmpty()) {
             Piece* piece = board.getTile(row, col).getPiece();
-            if (piece && piece->getIsWhite()) {
+            // Check if the piece belongs to the player
+            if (piece && piece->getIsWhite() == playerIsWhite) {
                 selectedRow = row;
                 selectedCol = col;
                 pieceSelected = true;
@@ -172,13 +193,15 @@ void Game::mousePressEvent(QMouseEvent* event) {
                 statusMessage = QString::fromStdString(gameMessage);
             }
             else {
-                if (whoseTurn) {
-                    statusMessage = "Bot thinking...";
+                // Check if it's now bot's turn
+                bool isBotTurn = (playerIsWhite && whoseTurn) || (!playerIsWhite && !whoseTurn);
+                if (isBotTurn) {
+                    statusMessage = whoseTurn ? "Black Bot thinking..." : "White Bot thinking...";
                     update();
                     botTimer->start(1000);
                 }
                 else {
-                    statusMessage = "White to move";
+                    statusMessage = playerIsWhite ? "White to move" : "Black to move";
                 }
             }
         }
@@ -188,12 +211,14 @@ void Game::mousePressEvent(QMouseEvent* event) {
 }
 
 void Game::makeBotMove() {
-    if (!whoseTurn) return;
+    ChessBot& currentBot = whoseTurn ? blackBot : whiteBot;
+    bool isWhite = !whoseTurn;
 
-    Move botMove = bot.getBestMove(board, false);
+    Move botMove = currentBot.getBestMove(board, isWhite);
 
     if (botMove.fromRow == -1) {
-        statusMessage = "Bot has no legal moves";
+        statusMessage = whoseTurn ? "Black Bot has no legal moves" : "White Bot has no legal moves";
+        update();
         return;
     }
 
@@ -203,7 +228,7 @@ void Game::makeBotMove() {
             if (piece && piece->getPieceType() == 1) {
                 delete piece;
                 board.getTile(botMove.toRow, botMove.toCol).setPiece(nullptr);
-                board.autoPromote(botMove.toRow, botMove.toCol, false, botMove.promotionPiece);
+                board.autoPromote(botMove.toRow, botMove.toCol, isWhite, botMove.promotionPiece);
             }
         }
 
@@ -219,7 +244,20 @@ void Game::makeBotMove() {
             statusMessage = QString::fromStdString(gameMessage);
         }
         else {
-            statusMessage = "White to move";
+            if (isPlayerVsBot) {
+                bool isBotTurn = (playerIsWhite && whoseTurn) || (!playerIsWhite && !whoseTurn);
+                if (isBotTurn) {
+                    statusMessage = whoseTurn ? "Black Bot thinking..." : "White Bot thinking...";
+                    update();
+                    botTimer->start(1000);
+                } else {
+                    statusMessage = playerIsWhite ? "White to move" : "Black to move";
+                }
+            } else {
+                statusMessage = whoseTurn ? "Black Bot thinking..." : "White Bot thinking...";
+                update();
+                botTimer->start(1000);
+            }
         }
     }
 
