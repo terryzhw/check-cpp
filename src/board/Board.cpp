@@ -98,7 +98,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     
     if (piece->getPieceType() == 1) {
         Pawn* pawn = dynamic_cast<Pawn*>(piece);
-        if (pawn->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+        if (pawn && pawn->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
 
             halfMove = 0;
 
@@ -109,18 +109,19 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
             else if (abs(toCol - fromCol) == 1 && chessboard[toRow][toCol].isEmpty()) {
                 if (toCol == fromCol + 1 && fromCol + 1 < 8 && !chessboard[fromRow][fromCol+1].isEmpty()){
                     Piece* capturedPiece = chessboard[fromRow][fromCol+1].getPiece();
-                    if (capturedPiece->getPieceType() == 1) {
+                    if (capturedPiece && capturedPiece->getPieceType() == 1) {
                         Pawn* capturedPawn = dynamic_cast<Pawn*>(capturedPiece);
-                        if (capturedPawn->getPassantVulnerable()) {
+                        if (capturedPawn && capturedPawn->getPassantVulnerable()) {
                             delete chessboard[fromRow][fromCol+1].getPiece();
+                            chessboard[fromRow][fromCol+1].setPiece(nullptr);
                         }
                     }
                 }
                 else if (toCol == fromCol - 1 && fromCol - 1 >= 0 && !chessboard[fromRow][fromCol-1].isEmpty()){
                     Piece* capturedPiece = chessboard[fromRow][fromCol-1].getPiece();
-                    if (capturedPiece->getPieceType() == 1) {
+                    if (capturedPiece && capturedPiece->getPieceType() == 1) {
                         Pawn* capturedPawn = dynamic_cast<Pawn*>(capturedPiece);
-                        if (capturedPawn->getPassantVulnerable()) {
+                        if (capturedPawn && capturedPawn->getPassantVulnerable()) {
                             delete chessboard[fromRow][fromCol-1].getPiece();
                             chessboard[fromRow][fromCol-1].setPiece(nullptr);
                         }
@@ -161,7 +162,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     else if (piece->getPieceType() == 2) {
         Bishop* bishop = dynamic_cast<Bishop*>(piece);
 
-        if (bishop->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+        if (bishop && bishop->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
                 halfMove = 0;
@@ -178,7 +179,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     }
     else if (piece->getPieceType() == 3) {
         Knight* knight = dynamic_cast<Knight*>(piece);
-        if (knight->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+        if (knight && knight->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
                 halfMove = 0;
@@ -195,7 +196,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     }
     else if (piece->getPieceType() == 4) {
         Rook* rook = dynamic_cast<Rook*>(piece);
-        if (rook->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+        if (rook && rook->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
                 halfMove = 0;
@@ -214,7 +215,7 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     }
     else if (piece->getPieceType() == 5) {
         Queen* queen = dynamic_cast<Queen*>(piece);
-        if (queen->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+        if (queen && queen->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             if (!chessboard[toRow][toCol].isEmpty()) {
                 delete chessboard[toRow][toCol].getPiece();
                 halfMove = 0;
@@ -231,27 +232,35 @@ bool Board::makeMove(int fromRow, int fromCol, int toRow, int toCol) {
     }
     else if (piece->getPieceType() == 6) {
         King* king = dynamic_cast<King*>(piece);
-        if (king->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
+        if (king && king->isValidMove(fromRow, fromCol, toRow, toCol, *this)) {
             int colDiff = toCol - fromCol;
             
             if (!king->getHasMoved() && abs(colDiff) == 2) {
-                // king side 
+                // king side
                 if (colDiff == 2) {
                     Piece* rook = chessboard[fromRow][7].getPiece();
-                    chessboard[fromRow][5].setPiece(rook);
-                    chessboard[fromRow][7].setPiece(nullptr);
-                    
-                    Rook* castleRook = dynamic_cast<Rook*>(rook);
-                    castleRook->setHasMoved(true);
+                    if (rook) {
+                        chessboard[fromRow][5].setPiece(rook);
+                        chessboard[fromRow][7].setPiece(nullptr);
+
+                        Rook* castleRook = dynamic_cast<Rook*>(rook);
+                        if (castleRook) {
+                            castleRook->setHasMoved(true);
+                        }
+                    }
                 }
                 // queen side
                 else if (colDiff == -2) {
                     Piece* rook = chessboard[fromRow][0].getPiece();
-                    chessboard[fromRow][3].setPiece(rook);
-                    chessboard[fromRow][0].setPiece(nullptr);
-                    
-                    Rook* castleRook = dynamic_cast<Rook*>(rook);
-                    castleRook->setHasMoved(true);
+                    if (rook) {
+                        chessboard[fromRow][3].setPiece(rook);
+                        chessboard[fromRow][0].setPiece(nullptr);
+
+                        Rook* castleRook = dynamic_cast<Rook*>(rook);
+                        if (castleRook) {
+                            castleRook->setHasMoved(true);
+                        }
+                    }
                 }
             }
 
@@ -353,6 +362,26 @@ void Board::blackPromote(int toRow, int toCol) {
 
 }
 
+void Board::autoPromote(int toRow, int toCol, bool isWhite, int pieceType) {
+    switch (pieceType) {
+        case 5:
+            chessboard[toRow][toCol].setPiece(new Queen(isWhite));
+            break;
+        case 4:
+            chessboard[toRow][toCol].setPiece(new Rook(isWhite));
+            break;
+        case 3:
+            chessboard[toRow][toCol].setPiece(new Bishop(isWhite));
+            break;
+        case 2:
+            chessboard[toRow][toCol].setPiece(new Knight(isWhite));
+            break;
+        default:
+            chessboard[toRow][toCol].setPiece(new Queen(isWhite));
+            break;
+    }
+}
+
 bool Board::findKing(bool kingColor, int& kingRow, int& kingCol) const{
     for (int row = 0; row < 8; row++) {
         for (int col = 0; col < 8; col++) {
@@ -385,37 +414,37 @@ bool Board::kingCheck(bool kingColor) {
                 if (piece->getIsWhite() != kingColor) {
                     if (piece->getPieceType() == 1) {
                         Pawn* pawn = dynamic_cast<Pawn*>(piece);
-                        if (pawn->canAttack(row, col, kingRow, kingCol)) {
+                        if (pawn && pawn->canAttack(row, col, kingRow, kingCol)) {
                             return true;
                         }
                     }
                     else if (piece->getPieceType() == 2) {
                         Bishop* bishop= dynamic_cast<Bishop*>(piece);
-                        if (bishop->isValidMove(row, col, kingRow, kingCol, *this)) {
+                        if (bishop && bishop->isValidMove(row, col, kingRow, kingCol, *this)) {
                             return true;
                         }
                     }
                     else if (piece->getPieceType() == 3) {
                         Knight* knight = dynamic_cast<Knight*>(piece);
-                        if (knight->isValidMove(row, col, kingRow, kingCol, *this)) {
+                        if (knight && knight->isValidMove(row, col, kingRow, kingCol, *this)) {
                             return true;
                         }
                     }
                     else if (piece->getPieceType() == 4) {
                         Rook* rook = dynamic_cast<Rook*>(piece);
-                        if (rook->isValidMove(row, col, kingRow, kingCol, *this)) {
+                        if (rook && rook->isValidMove(row, col, kingRow, kingCol, *this)) {
                             return true;
                         }
                     }
                     else if (piece->getPieceType() == 5) {
                         Queen* queen = dynamic_cast<Queen*>(piece);
-                        if (queen->isValidMove(row, col, kingRow, kingCol, *this)) {
+                        if (queen && queen->isValidMove(row, col, kingRow, kingCol, *this)) {
                             return true;
                         }
                     }
                     else if (piece->getPieceType() == 6) {
                         King* king = dynamic_cast<King*>(piece);
-                        if (king->isValidMove(row, col, kingRow, kingCol, *this)) {
+                        if (king && king->isValidMove(row, col, kingRow, kingCol, *this)) {
                             return true;
                         }
                     }
@@ -435,9 +464,9 @@ bool Board::beKingCheck(int fromRow, int fromCol, int toRow, int toCol, bool kin
     int epRow = -1;
     int epCol = -1;
 
-    if (ogFromPiece->getPieceType() == 1) { 
+    if (ogFromPiece && ogFromPiece->getPieceType() == 1) {
         Pawn* movingPawn = dynamic_cast<Pawn*>(ogFromPiece);
-        if (abs(toCol - fromCol) == 1 && chessboard[toRow][toCol].isEmpty()) {
+        if (movingPawn && abs(toCol - fromCol) == 1 && chessboard[toRow][toCol].isEmpty()) {
             epRow = fromRow;
             epCol = toCol;
             epPiece = chessboard[epRow][epCol].getPiece();
@@ -484,7 +513,7 @@ bool Board::noLegalMoves(bool kingColor) {
                         for (int toCol=0; toCol<8; toCol++) {
                             if (piece->getPieceType() == 1) {
                                 Pawn* pawn = dynamic_cast<Pawn*>(piece);
-                                if (pawn->isValidMove(row, col, toRow, toCol, *this)) {
+                                if (pawn && pawn->isValidMove(row, col, toRow, toCol, *this)) {
                                     if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
                                         return false;
                                     }
@@ -492,7 +521,7 @@ bool Board::noLegalMoves(bool kingColor) {
                             }
                             else if (piece->getPieceType() == 2) {
                                 Bishop* bishop = dynamic_cast<Bishop*>(piece);
-                                if (bishop->isValidMove(row, col, toRow, toCol, *this)) {
+                                if (bishop && bishop->isValidMove(row, col, toRow, toCol, *this)) {
                                     if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
                                         return false;
                                     }
@@ -500,7 +529,7 @@ bool Board::noLegalMoves(bool kingColor) {
                             }
                             else if (piece->getPieceType() == 3) {
                                 Knight* knight = dynamic_cast<Knight*>(piece);
-                                if (knight->isValidMove(row, col, toRow, toCol, *this)) {
+                                if (knight && knight->isValidMove(row, col, toRow, toCol, *this)) {
                                     if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
                                         return false;
                                     }
@@ -508,7 +537,7 @@ bool Board::noLegalMoves(bool kingColor) {
                             }
                             else if (piece->getPieceType() == 4) {
                                 Rook* rook = dynamic_cast<Rook*>(piece);
-                                if (rook->isValidMove(row, col, toRow, toCol, *this)) {
+                                if (rook && rook->isValidMove(row, col, toRow, toCol, *this)) {
                                     if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
                                         return false;
                                     }
@@ -516,7 +545,7 @@ bool Board::noLegalMoves(bool kingColor) {
                             }
                             else if (piece->getPieceType() == 5) {
                                 Queen* queen = dynamic_cast<Queen*>(piece);
-                                if (queen->isValidMove(row, col, toRow, toCol, *this)) {
+                                if (queen && queen->isValidMove(row, col, toRow, toCol, *this)) {
                                     if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
                                         return false;
                                     }
@@ -524,7 +553,7 @@ bool Board::noLegalMoves(bool kingColor) {
                             }
                             else if (piece->getPieceType() == 6) {
                                 King* king = dynamic_cast<King*>(piece);
-                                if (king->isValidMove(row, col, toRow, toCol, *this)) {
+                                if (king && king->isValidMove(row, col, toRow, toCol, *this)) {
                                     if (!beKingCheck(row, col, toRow, toCol, kingColor)) {
                                         return false;
                                     }

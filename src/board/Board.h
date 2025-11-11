@@ -19,6 +19,7 @@ public:
     void setMoves(int move);
     void whitePromote(int toRow, int toCol);
     void blackPromote(int toRow, int toCol);
+    void autoPromote(int toRow, int toCol, bool isWhite, int pieceType);
     bool findKing(bool kingColor, int& kingRow, int& kingCol) const;
     bool kingCheck(bool kingColor);
     bool beKingCheck(int fromRow, int fromCol, int toRow, int toCol, bool kingColor);

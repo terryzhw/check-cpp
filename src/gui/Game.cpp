@@ -3,14 +3,27 @@
 #include <QColor>
 #include <iostream>
 
-Game::Game(QWidget* parent) : QWidget(parent) {
-    setFixedSize(800, 850);
-    setWindowTitle("Chess");
+Game::Game(bool playerVsBot, int whiteBotDepth, int blackBotDepth, QWidget* parent)
+    : QWidget(parent), blackBot(blackBotDepth), whiteBot(whiteBotDepth) {
+    setFixedSize(600, 650);
+    setWindowTitle("CheckCPP");
     selectedRow = -1;
     selectedCol = -1;
     pieceSelected = false;
     whoseTurn = false;
-    statusMessage = "White to move";
+    isPlayerVsBot = playerVsBot;
+    playerIsWhite = true; 
+
+    botTimer = new QTimer(this);
+    botTimer->setSingleShot(true);
+    connect(botTimer, &QTimer::timeout, this, &Game::makeBotMove);
+
+    if (isPlayerVsBot) {
+        statusMessage = "White to move";
+    } else {
+        statusMessage = "White Bot thinking...";
+        botTimer->start(1000);
+    }
 }
 
 Game::~Game() {
@@ -127,35 +140,42 @@ void Game::paintEvent(QPaintEvent* event) {
         font.setBold(true);
         painter.setFont(font);
 
-        QRect textRect(0, 600, 800, 50);
+        QRect textRect(0, 600, 600, 50);
         painter.drawText(textRect, Qt::AlignCenter, statusMessage);
     }
 }
 
 void Game::mousePressEvent(QMouseEvent* event) {
+    // Only allow human input in player vs bot mode
+    if (!isPlayerVsBot) {
+        return;
+    }
+
     int tileSize = 75;
     int col = event->position().x() / tileSize;
     int row = event->position().y() / tileSize;
-    
+
     if (row < 0 || row >= 8 || col < 0 || col >= 8) {
         return;
     }
-    
-    if (!pieceSelected) {
-        Piece* piece = board.getTile(row, col).getPiece();
-        if (!board.getTile(row, col).isEmpty() && !whoseTurn && piece->getIsWhite()) {
-            selectedRow = row;
-            selectedCol = col;
-            pieceSelected = true;
-            update();
-        }
-        else if (!board.getTile(row, col).isEmpty() && whoseTurn && !piece->getIsWhite()) {
-            selectedRow = row;
-            selectedCol = col;
-            pieceSelected = true;
-            update();
-        }
 
+    // Only allow moves when it's player's turn
+    bool isPlayerTurn = (playerIsWhite && !whoseTurn) || (!playerIsWhite && whoseTurn);
+    if (!isPlayerTurn) {
+        return;
+    }
+
+    if (!pieceSelected) {
+        if (!board.getTile(row, col).isEmpty()) {
+            Piece* piece = board.getTile(row, col).getPiece();
+            // Check if the piece belongs to the player
+            if (piece && piece->getIsWhite() == playerIsWhite) {
+                selectedRow = row;
+                selectedCol = col;
+                pieceSelected = true;
+                update();
+            }
+        }
     }
     // switching turns
     else {
@@ -163,25 +183,83 @@ void Game::mousePressEvent(QMouseEvent* event) {
             whoseTurn = !whoseTurn;
 
             std::string gameMessage = board.gameState(whoseTurn);
-            
+
             // game over popup
             if (board.isGameOver(whoseTurn)) {
                 QMessageBox::information(this, "Game Over", QString::fromStdString(gameMessage));
                 statusMessage = QString::fromStdString(gameMessage);
-            } 
+            }
             else if (!gameMessage.empty()) {
                 statusMessage = QString::fromStdString(gameMessage);
-            } 
+            }
             else {
-                if (whoseTurn) {
-                    statusMessage = "Black to move";
-                } 
+                // Check if it's now bot's turn
+                bool isBotTurn = (playerIsWhite && whoseTurn) || (!playerIsWhite && !whoseTurn);
+                if (isBotTurn) {
+                    statusMessage = whoseTurn ? "Black Bot thinking..." : "White Bot thinking...";
+                    update();
+                    botTimer->start(1000);
+                }
                 else {
-                    statusMessage = "White to move";
+                    statusMessage = playerIsWhite ? "White to move" : "Black to move";
                 }
             }
         }
         pieceSelected = false;
         update();
     }
+}
+
+void Game::makeBotMove() {
+    ChessBot& currentBot = whoseTurn ? blackBot : whiteBot;
+    bool isWhite = !whoseTurn;
+
+    Move botMove = currentBot.getBestMove(board, isWhite);
+
+    if (botMove.fromRow == -1) {
+        statusMessage = whoseTurn ? "Black Bot has no legal moves" : "White Bot has no legal moves";
+        update();
+        return;
+    }
+
+    if (board.makeMove(botMove.fromRow, botMove.fromCol, botMove.toRow, botMove.toCol)) {
+        if (botMove.promotionPiece > 0 && !board.getTile(botMove.toRow, botMove.toCol).isEmpty()) {
+            Piece* piece = board.getTile(botMove.toRow, botMove.toCol).getPiece();
+            if (piece && piece->getPieceType() == 1) {
+                delete piece;
+                board.getTile(botMove.toRow, botMove.toCol).setPiece(nullptr);
+                board.autoPromote(botMove.toRow, botMove.toCol, isWhite, botMove.promotionPiece);
+            }
+        }
+
+        whoseTurn = !whoseTurn;
+
+        std::string gameMessage = board.gameState(whoseTurn);
+
+        if (board.isGameOver(whoseTurn)) {
+            QMessageBox::information(this, "Game Over", QString::fromStdString(gameMessage));
+            statusMessage = QString::fromStdString(gameMessage);
+        }
+        else if (!gameMessage.empty()) {
+            statusMessage = QString::fromStdString(gameMessage);
+        }
+        else {
+            if (isPlayerVsBot) {
+                bool isBotTurn = (playerIsWhite && whoseTurn) || (!playerIsWhite && !whoseTurn);
+                if (isBotTurn) {
+                    statusMessage = whoseTurn ? "Black Bot thinking..." : "White Bot thinking...";
+                    update();
+                    botTimer->start(1000);
+                } else {
+                    statusMessage = playerIsWhite ? "White to move" : "Black to move";
+                }
+            } else {
+                statusMessage = whoseTurn ? "Black Bot thinking..." : "White Bot thinking...";
+                update();
+                botTimer->start(1000);
+            }
+        }
+    }
+
+    update();
 }

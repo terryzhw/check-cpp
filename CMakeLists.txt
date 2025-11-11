@@ -14,8 +14,10 @@ qt_standard_project_setup()
 add_executable(chess
     src/main.cpp
     src/gui/Game.cpp
+    src/gui/Menu.cpp
     src/board/Board.cpp
     src/board/Tile.cpp
+    src/bot/ChessBot.cpp
     src/pieces/Piece.cpp
     src/pieces/Pawn.cpp
     src/pieces/Bishop.cpp
