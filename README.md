@@ -1,10 +1,10 @@
 <h1 align="center">
   <br>
-  Chess with Minimax Bot
+  CheckCPP
   <br>
 </h1>
 
-<h4 align="center">A chess game with an intelligent AI opponent built using <a href="https://www.qt.io/" target="_blank">Qt6</a>.</h4>
+<h4 align="center">A chess game with an intelligent AI opponent.</h4>
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
