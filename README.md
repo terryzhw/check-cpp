@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  Chess with Minimax Bot
+  CheckCPP
   <br>
 </h1>
 
