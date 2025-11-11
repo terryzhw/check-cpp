@@ -17,22 +17,14 @@
 
 ## Key Features
 
-* Intelligent AI Opponent - Play against a challenging chess bot
+* Intelligent AI Opponent
   - Minimax algorithm with alpha-beta pruning for optimal move selection
   - Configurable search depth for different difficulty levels
   - Position evaluation system with piece values and board positioning
+* Bot vs. Bot Mode
 * Full Chess Implementation
-  - Complete ruleset including castling, en passant, and pawn promotion
-  - Check and checkmate detection
-  - Stalemate and draw recognition
 * Modern GUI
-  - Clean, intuitive interface built with Qt6
-  - Visual piece selection highlighting
-  - Real-time game status updates
-  - Custom piece sprites for all chess pieces
 * Cross Platform
-  - Works on Windows and macOS
-  - Optimized with CMake build system
 
 ## How To Use
 
@@ -40,7 +32,6 @@ To clone and run this application, you'll need [Git](https://git-scm.com), [CMak
 
 ```bash
 # Clone this repository
-$ git clone https://github.com/terryzhw/check-cpp
 
 # Go into the repository
 $ cd check-cpp
@@ -85,7 +76,7 @@ The bot's strength can be adjusted by modifying the search depth in the code:
 - **Depth 5-6**: Intermediate level (balanced, good tactics)
 - **Depth 7+**: Advanced level (slow but very strong)
 
-Current default: **Depth 5** (configured in `src/gui/Game.cpp:6`)
+Current default: **Depth 5** 
 
 ## Installation
 
