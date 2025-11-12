@@ -14,8 +14,8 @@
   <a href="#key-features">Key Features</a> •
   <a href="#how-to-use">How To Use</a> •
   <a href="#game-rules">Game Rules</a> •
-  <a href="#installation">Installation</a> •
   <a href="#bot-difficulty">Bot Difficulty</a> •
+  <a href="#installation">Installation</a> •
   <a href="#license">License</a>
 </p>
 
@@ -132,6 +132,14 @@ check-cpp/
 ## Credits
 
 **Piece Sprites**: [Clipart Library](https://clipart-library.com/clipart/kTKopobEc.htm)
+
+## Gallery
+
+<p align="center">
+  <img src="src/assets/menu.png" alt="" width="300">
+  <img src="src/assets/check.png" alt="" width="300">
+  <img src="src/assets/bot.png" alt="" width="300">
+</p>
 
 ## Support
 
