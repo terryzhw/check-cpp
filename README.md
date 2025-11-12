@@ -4,6 +4,10 @@
   <br>
 </h1>
 
+<p align="center">
+  <img src="src/assets/chess.gif" alt="CheckCPP Demo" width="600">
+</p>
+
 <h4 align="center">A chess game with an intelligent AI opponent.</h4>
 
 <p align="center">
