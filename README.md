@@ -129,17 +129,19 @@ check-cpp/
 └── README.md
 ```
 
-## Credits
-
-**Piece Sprites**: [Clipart Library](https://clipart-library.com/clipart/kTKopobEc.htm)
 
 ## Gallery
 
 <p align="center">
-  <img src="src/assets/menu.png" alt="" width="300">
   <img src="src/assets/check.png" alt="" width="300">
   <img src="src/assets/bot.png" alt="" width="300">
+  <img src="src/assets/menu.png" alt="" width="300">
 </p>
+
+
+## Credits
+
+**Piece Sprites**: [Clipart Library](https://clipart-library.com/clipart/kTKopobEc.htm)
 
 ## Support
 
